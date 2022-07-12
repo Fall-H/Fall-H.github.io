@@ -1,53 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>bean 相关源码学习</title>
-    <url>/2022/07/12/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h1 id="获取-bean-的方案"><a href="#获取-bean-的方案" class="headerlink" title="获取 bean 的方案"></a>获取 <code>bean</code> 的方案</h1><h2 id="创建类的标准的方案"><a href="#创建类的标准的方案" class="headerlink" title="创建类的标准的方案"></a>创建类的标准的方案</h2><ol>
-<li>BeanNameAware’s setBeanName</li>
-<li>BeanClassLoaderAware’s setBeanClassLoader</li>
-<li>BeanFactoryAware’s setBeanFactory</li>
-<li>EnvironmentAware’s setEnvironment</li>
-<li>EmbeddedValueResolverAware’s setEmbeddedValueResolver</li>
-<li>ResourceLoaderAware’s setResourceLoader (only applicable when running in an application context)<br>ApplicationEventPublisherAware’s<br>setApplicationEventPublisher (only applicable when running in an application context)</li>
-<li>MessageSourceAware’s setMessageSource (only applicable when running in an application context)</li>
-<li>ApplicationContextAware’s setApplicationContext (only applicable when running in an application context)</li>
-<li>ServletContextAware’s setServletContext (only applicable when running in a web application context)<br>postProcessBeforeInitialization methods of BeanPostProcessors</li>
-<li>InitializingBean’s afterPropertiesSet<br>a custom init-method definition<br>postProcessAfterInitialization methods of BeanPostProcessors</li>
-</ol>
-<h2 id="当-bean-factory-被销毁时"><a href="#当-bean-factory-被销毁时" class="headerlink" title="当 bean factory 被销毁时"></a>当 <code>bean factory</code> 被销毁时</h2><ol>
-<li>postProcessBeforeDestruction methods of DestructionAwareBeanPostProcessors</li>
-<li>DisposableBean’s destroy</li>
-<li>a custom destroy-method definition</li>
-</ol>
-<h1 id="创建-bean-的过程"><a href="#创建-bean-的过程" class="headerlink" title="创建 bean 的过程"></a>创建 <code>bean</code> 的过程</h1><p>调用 <code>beanfactory</code> 中的 <code>getBean</code> 中的方法得到类的实体</p>
+    <title>GetBean 相关源码学习</title>
+    <url>/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="创建-bean-的过程"><a href="#创建-bean-的过程" class="headerlink" title="创建 bean 的过程"></a>创建 <code>bean</code> 的过程</h1><p>调用 <code>beanfactory</code> 中的 <code>getBean</code> 中的方法得到类的实体</p>
 <p>其中方法中可以使用 <code>name</code> <code>requiredType</code> <code>args</code> 得到特定的类型</p>
+<p>有如下签名</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(String name, Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br></pre></td></tr></table></figure>
+
 <p>进入 <code>getBean</code> 之后进入 <code>doGetBean</code> 方法统一处理所有的 <code>getBean</code> </p>
 <p>在先去单例缓存中尝试取出 <code>bean</code> 如果没有 <code>bean</code> 通过 <code>singleton</code> 和 <code>prototype</code> 判断是创建单例还是原型</p>
 <ol>
-<li><p>单例</p>
-<p> 调用 <code>createBean</code> 方法 创建 <code>bean</code> 同时注册进单例缓存中</p>
-<p> 调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-</li>
-<li><p>原型</p>
+<li>单例</li>
+</ol>
+<p><code>AbstractBeanFactory.java</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">sharedInstance = getSingleton(beanName, () -&gt; &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> createBean(beanName, mbd, args);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">	    <span class="comment">// 从单例缓存中显式删除实例：它可能已经放在那里</span></span><br><span class="line">	    <span class="comment">// 急切地通过创建过程，以允许循环引用解析。</span></span><br><span class="line">	    <span class="comment">// 还要删除任何接收到对 bean 的临时引用的 bean。</span></span><br><span class="line">	    destroySingleton(beanName);</span><br><span class="line">	    <span class="keyword">throw</span> ex;</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
+
+<p>调用 <code>createBean</code> 方法 创建 <code>bean</code> 同时注册进单例缓存中</p>
+<p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
+<ol start="2">
+<li>原型</li>
+</ol>
+<p><code>AbstractBeanFactory.java</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">prototypeInstance</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	beforePrototypeCreation(beanName);</span><br><span class="line">	prototypeInstance = createBean(beanName, mbd, args);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">	afterPrototypeCreation(beanName);</span><br><span class="line">&#125;</span><br><span class="line">beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
+
 <p>调用 <code>beforePrototypeCreation</code></p>
 <p>调用 <code>createBean</code> 方法 创建 <code>bean</code></p>
 <p>调用 <code>afterPrototypeCreation</code></p>
 <p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-</li>
-</ol>
 <p><small> <code>getObjectForBeanInstance</code> 这个方法 主要是获取给定 bean 实例的对象，bean 实例本身或其创建的对象（如果是 FactoryBean） </small></p>
-<p>然后就是进入 <code>createBean</code> 方法之中 通过这个方法创建 <code>bean</code> 的实例 填充 <code>bean</code> 的实例 执行 <code>postprocessors</code></p>
-<p>执行 <code>doCreateBean</code> 方法 加载创建类的细节</p>
-<p>在 <code>doCreateBean</code> 方法中</p>
+<p>然后就是进入 <code>createBean</code> 方法之中执行 <code>doCreateBean</code> 方法加载创建类的细节</p>
+<h1 id="在-doCreateBean-方法中"><a href="#在-doCreateBean-方法中" class="headerlink" title="在 doCreateBean 方法中"></a>在 <code>doCreateBean</code> 方法中</h1><ol>
+<li><p>实例化 <code>bean</code> 调用 <code>createBeanInstance</code></p>
 <ol>
-<li>填充 <code>bean</code> 中的字段</li>
-<li>初始化 <code>bean</code> </li>
-<li>通过 <code>earlySingletonExposure</code> 解决依赖循环的问题</li>
-<li>将该 <code>bean</code> 注册进 <code>disposable</code> 列表中</li>
+<li>如果是通过 <code>@Bean</code> 加载 <code>bean</code> 的话，调用 <code>instantiateUsingFactoryMethod</code> 通过方法实例化</li>
+<li>匹配类的构造器，通过构造器将类实例化</li>
+</ol>
+</li>
+<li><p>填充 <code>bean</code> 中的字段</p>
+<ol>
+<li>填充字段的方案是由 <code>RootBeanDefinition</code> 这个包装类中的 <code>PropertyValues</code> 字段</li>
+<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段</li>
+</ol>
+</li>
+<li><p>初始化 <code>bean</code> </p>
+<ol>
+<li>调用 <code>Aware</code> 容器感知功能其执行的顺序是 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">BeanNameAware</span><br><span class="line">BeanClassLoaderAware</span><br><span class="line">BeanFactoryAware</span><br></pre></td></tr></table></figure>
+ 通过这些方法可以在当前 <code>bean</code> 中后的例如: <code>bean name</code> <code>class loader</code> <code>bean factory</code> 等一些基础信息</li>
+<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessBeforeInitialization</code></li>
+<li>调用用户自定义的 <code>init method</code></li>
+<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessAfterInitialization</code></li>
+</ol>
+</li>
+<li><p>通过 <code>earlySingletonExposure</code> 解决依赖循环的问题</p>
+</li>
+<li><p>将该 <code>bean</code> 注册进 <code>disposable</code> 列表中</p>
+</li>
 </ol>
 <p>返回类型</p>
 <p>得到 <code>bean</code> 的整体流程结束</p>
 ]]></content>
+      <categories>
+        <category>spring</category>
+        <category>ioc</category>
+      </categories>
+      <tags>
+        <tag>spring</tag>
+        <tag>ioc</tag>
+      </tags>
   </entry>
 </search>
