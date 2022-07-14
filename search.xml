@@ -71,7 +71,7 @@
       </tags>
   </entry>
   <entry>
-    <title>GetBean 相关源码学习</title>
+    <title>读取 bean 相关源码学习</title>
     <url>/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id="读取-bean-的过程"><a href="#读取-bean-的过程" class="headerlink" title="读取 bean 的过程"></a>读取 <code>bean</code> 的过程</h1><p>创建对象 <code>ClassPathXmlApplicationContext</code></p>
 <p>通过 <code>refresh</code> 进行加载</p>
