@@ -99,6 +99,8 @@
 <p>具体是怎么是做的呢</p>
 <p>在 <code>processConfigBeanDefinitions</code> 这个方法中找出所有的 <code>@Configuration</code> 配置类，然后对每个配置类进项解析</p>
 <p>在方法 <code>parse</code> 中去选择以何种方式调用 <code>processConfigurationClass</code> 在 <code>retrieveBeanMethodMetadata</code> 找出有 <code>@bean</code> 的方法，将其注册到 <code>ConfigurationClass</code> 中解析完成，<code>loadBeanDefinitions</code> 这个方法正常就是将 <code>bean</code> 包装注册。</p>
+<h1 id="自动加载"><a href="#自动加载" class="headerlink" title="自动加载"></a>自动加载</h1><p>其加载方式和通过 <code>@bean</code> 加载代码的方式差不多你需要在类上打上 <code>@component</code> 这个注解以便让 <code>spring</code> 中 <code>@componentScan</code> 这个注解可以加载其</p>
+<p>和上面的加载方式一样进入 <code>doProcessConfigurationClass</code> 方法只不过其调用其中的 <code>componentScanParser.parse</code> 方法去扫描所有的类看其实是否拥有 <code>@component</code> 注解如果有则将其包装注册 </p>
 ]]></content>
       <categories>
         <category>spring</category>
