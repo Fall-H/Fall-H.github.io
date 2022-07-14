@@ -40,7 +40,8 @@
 <li><p>填充 <code>bean</code> 中的字段</p>
 <ol>
 <li>填充字段的方案是由 <code>RootBeanDefinition</code> 这个包装类中的 <code>PropertyValues</code> 字段</li>
-<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段</li>
+<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段 </li>
+<li>如果使用注解的方式加载 <code>bean</code> 的话还会加载 <code>AutowiredAnnotationProcessor</code> 这样一个类，在填充的会使用其实现的一个 <code>postProcessProperties</code> 方式读取带有 <code>@Autowired</code> 的代码进行代码字段的注入</li>
 </ol>
 </li>
 <li><p>初始化 <code>bean</code> </p>
@@ -59,6 +60,45 @@
 </ol>
 <p>返回类型</p>
 <p>得到 <code>bean</code> 的整体流程结束</p>
+]]></content>
+      <categories>
+        <category>spring</category>
+        <category>ioc</category>
+      </categories>
+      <tags>
+        <tag>spring</tag>
+        <tag>ioc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GetBean 相关源码学习</title>
+    <url>/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="读取-bean-的过程"><a href="#读取-bean-的过程" class="headerlink" title="读取 bean 的过程"></a>读取 <code>bean</code> 的过程</h1><p>创建对象 <code>ClassPathXmlApplicationContext</code></p>
+<p>通过 <code>refresh</code> 进行加载</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">StartupStep</span> <span class="variable">contextRefresh</span> <span class="operator">=</span> <span class="built_in">this</span>.applicationStartup.start(<span class="string">&quot;spring.context.refresh&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 准备此上下文以进行刷新。</span></span><br><span class="line">prepareRefresh();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 告诉子类刷新内部 bean 工厂。</span></span><br><span class="line"><span class="type">ConfigurableListableBeanFactory</span> <span class="variable">beanFactory</span> <span class="operator">=</span> obtainFreshBeanFactory();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 准备 bean 工厂以在此上下文中使用。</span></span><br><span class="line">prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	<span class="comment">// 允许在上下文子类中对 bean 工厂进行后处理。</span></span><br><span class="line">	postProcessBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="type">StartupStep</span> <span class="variable">beanPostProcess</span> <span class="operator">=</span> <span class="built_in">this</span>.applicationStartup.start(<span class="string">&quot;spring.context.beans.post-process&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 调用在上下文中注册为 bean 的工厂处理器。</span></span><br><span class="line">	invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册拦截 bean 创建的 bean 处理器。</span></span><br><span class="line">	registerBeanPostProcessors(beanFactory);</span><br><span class="line">	beanPostProcess.end();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 为此上下文初始化消息源。</span></span><br><span class="line">	initMessageSource();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 为此上下文初始化事件多播器。</span></span><br><span class="line">	initApplicationEventMulticaster();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 初始化特定上下文子类中的其他特殊 bean。</span></span><br><span class="line">	onRefresh();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 检查侦听器 bean 并注册它们。</span></span><br><span class="line">	registerListeners();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 实例化所有剩余的（非惰性初始化）单例。</span></span><br><span class="line">	finishBeanFactoryInitialization(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 最后一步：发布相应的事件。</span></span><br><span class="line">	finishRefresh();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">	<span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">		logger.warn(<span class="string">&quot;Exception encountered during context initialization - &quot;</span> + <span class="string">&quot;cancelling refresh attempt: &quot;</span> + ex);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 销毁已经创建的单例以避免悬空资源。</span></span><br><span class="line">	destroyBeans();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 重置&#x27;活动&#x27;标志。</span></span><br><span class="line">	cancelRefresh(ex);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将异常传播给调用者。</span></span><br><span class="line">	<span class="keyword">throw</span> ex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// 重置 Spring 核心中的常见自省缓存，因为我们 </span></span><br><span class="line">    <span class="comment">// 可能不再需要单例 bean 的元数据...</span></span><br><span class="line">    resetCommonCaches();</span><br><span class="line">	contextRefresh.end();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个方法完成了 <code>spring</code> 三种加载 <code>bean</code> 的方法</p>
+<ul>
+<li>通过 <code>xml</code> 加载</li>
+<li>通过 <code>java</code> 方法加载</li>
+<li>通过 <code>spring</code> 自动加载</li>
+</ul>
+<h1 id="xml-读取方案"><a href="#xml-读取方案" class="headerlink" title="xml 读取方案"></a><code>xml</code> 读取方案</h1><p>方法流程 <code>obtainFreshBeanFactory</code> -&gt; <code>refreshBeanFactory</code> -&gt; <code>loadBeanDefinitions</code> -&gt; <code>doLoadBeanDefinitions</code> -&gt; <code>registerBeanDefinitions</code> -&gt; <code>doRegisterBeanDefinitions</code></p>
+<p>然后在 <code>doRegisterBeanDefinitions</code> 在这个方法中使用解析 <code>xml</code> 的方法，在读取并拼装好 <code>bean</code> 的包装类 <code>BeanDefinition</code> 注册到全局唯一的 <code>beanFactory</code> 中</p>
+<h1 id="java-方法加载"><a href="#java-方法加载" class="headerlink" title="java 方法加载"></a><code>java</code> 方法加载</h1><p>其主要是通过 <code>invokeBeanFactoryPostProcessors</code> 调用 <code>invokeBeanFactoryPostProcessors</code> 在这个方法内使用 <code>invokeBeanDefinitionRegistryPostProcessors</code> 方法通过 <code>BeanDefinitionRegistryPostProcessor</code> </p>
+<p>所以现在的问题又变成其中的 <code>BeanDefinitionRegistryPostProcessor</code> 是如何出现的了和 <code>xml</code> 读取方式不同是的通过 <code>java</code> 代码打注解的方式加载 <code>bean</code> 必须使用 <code>AnnotationConfigApplicationContext</code> 这个加载类启动区别在于其多了一个 <code>scan</code> 或则 <code>register</code> 方法 ( 这取决你通过使用何种方式扫描 <code>bean</code></p>
+<ul>
+<li><code>scan</code>: 通过 <code>java</code> 包</li>
+<li><code>register</code>: 通过配置类</li>
+</ul>
+<p>)</p>
+<p>在 <code>register</code> 中的 <code>BeanDefinitionReaderUtils</code> 使用 <code>registerBeanDefinition</code> 去注册配置 <code>bean</code> 类的包装类</p>
+<p>同时在创建 <code>AnnotationConfigApplicationContext</code> 类是，其会调用一些方法去注册固定的 <code>annotation post processon</code> 去完成 <code>@bean</code> 方法的注册</p>
+<p>下面就是 <code>BeanDefinitionRegistryPostProcessor</code> 中到底做了什么</p>
+<p>在 <code>BeanDefinitionRegistryPostProcessor</code> 中的一个实现子类 <code>ConfigurationClassPostProcessor</code> 是其解析和加载拥有 <code>@bean</code> 方法并且注册其的包装类</p>
+<p>具体是怎么是做的呢</p>
+<p>在 <code>processConfigBeanDefinitions</code> 这个方法中找出所有的 <code>@Configuration</code> 配置类，然后对每个配置类进项解析</p>
+<p>在方法 <code>parse</code> 中去选择以何种方式调用 <code>processConfigurationClass</code> 在 <code>retrieveBeanMethodMetadata</code> 找出有 <code>@bean</code> 的方法，将其注册到 <code>ConfigurationClass</code> 中解析完成，<code>loadBeanDefinitions</code> 这个方法正常就是将 <code>bean</code> 包装注册。</p>
 ]]></content>
       <categories>
         <category>spring</category>

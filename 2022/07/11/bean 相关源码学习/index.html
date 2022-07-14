@@ -87,7 +87,7 @@
 <meta property="og:description" content="创建 bean 的过程调用 beanfactory 中的 getBean 中的方法得到类的实体 其中方法中可以使用 name requiredType args 得到特定的类型 有如下签名 12345Object getBean(String name) throws BeansException;&lt;T&gt; T getBean(String name, Class&lt;T&gt; re">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-07-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-13T16:00:00.000Z">
 <meta property="article:author" content="秋语">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="ioc">
@@ -391,7 +391,8 @@
 <li><p>填充 <code>bean</code> 中的字段</p>
 <ol>
 <li>填充字段的方案是由 <code>RootBeanDefinition</code> 这个包装类中的 <code>PropertyValues</code> 字段</li>
-<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段</li>
+<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段 </li>
+<li>如果使用注解的方式加载 <code>bean</code> 的话还会加载 <code>AutowiredAnnotationProcessor</code> 这样一个类，在填充的会使用其实现的一个 <code>postProcessProperties</code> 方式读取带有 <code>@Autowired</code> 的代码进行代码字段的注入</li>
 </ol>
 </li>
 <li><p>初始化 <code>bean</code> </p>
@@ -438,6 +439,22 @@
       
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="prev" title="GetBean 相关源码学习">
+                GetBean 相关源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -515,7 +532,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="spring,ioc," />
 
 
 
@@ -79,12 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="秋语">
-<meta property="og:url" content="http://example.com/index.html">
+<meta name="description" content="读取 bean 的过程创建对象 ClassPathXmlApplicationContext 通过 refresh 进行加载 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162StartupStep contextRef">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GetBean 相关源码学习">
+<meta property="og:url" content="http://example.com/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="秋语">
+<meta property="og:description" content="读取 bean 的过程创建对象 ClassPathXmlApplicationContext 通过 refresh 进行加载 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162StartupStep contextRef">
 <meta property="og:locale">
+<meta property="article:published_time" content="2022-07-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-13T16:00:00.000Z">
 <meta property="article:author" content="秋语">
+<meta property="article:tag" content="spring">
+<meta property="article:tag" content="ioc">
 <meta name="twitter:card" content="summary">
 
 
@@ -115,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/"/>
+  <link rel="canonical" href="http://example.com/2022/07/14/读取 bean 相关源码学习/"/>
 
 
 
 
 
-  <title>秋语</title>
+  <title>GetBean 相关源码学习 | 秋语</title>
   
 
 
@@ -140,8 +146,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,9 +239,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -266,9 +271,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">GetBean 相关源码学习</a></h1>
+          <h1 class="post-title" itemprop="name headline">GetBean 相关源码学习</h1>
         
 
         <div class="post-meta">
@@ -351,9 +354,7 @@
       
 
       
-        
-          
-            <h1 id="读取-bean-的过程"><a href="#读取-bean-的过程" class="headerlink" title="读取 bean 的过程"></a>读取 <code>bean</code> 的过程</h1><p>创建对象 <code>ClassPathXmlApplicationContext</code></p>
+        <h1 id="读取-bean-的过程"><a href="#读取-bean-的过程" class="headerlink" title="读取 bean 的过程"></a>读取 <code>bean</code> 的过程</h1><p>创建对象 <code>ClassPathXmlApplicationContext</code></p>
 <p>通过 <code>refresh</code> 进行加载</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">StartupStep</span> <span class="variable">contextRefresh</span> <span class="operator">=</span> <span class="built_in">this</span>.applicationStartup.start(<span class="string">&quot;spring.context.refresh&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 准备此上下文以进行刷新。</span></span><br><span class="line">prepareRefresh();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 告诉子类刷新内部 bean 工厂。</span></span><br><span class="line"><span class="type">ConfigurableListableBeanFactory</span> <span class="variable">beanFactory</span> <span class="operator">=</span> obtainFreshBeanFactory();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 准备 bean 工厂以在此上下文中使用。</span></span><br><span class="line">prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	<span class="comment">// 允许在上下文子类中对 bean 工厂进行后处理。</span></span><br><span class="line">	postProcessBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="type">StartupStep</span> <span class="variable">beanPostProcess</span> <span class="operator">=</span> <span class="built_in">this</span>.applicationStartup.start(<span class="string">&quot;spring.context.beans.post-process&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 调用在上下文中注册为 bean 的工厂处理器。</span></span><br><span class="line">	invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册拦截 bean 创建的 bean 处理器。</span></span><br><span class="line">	registerBeanPostProcessors(beanFactory);</span><br><span class="line">	beanPostProcess.end();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 为此上下文初始化消息源。</span></span><br><span class="line">	initMessageSource();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 为此上下文初始化事件多播器。</span></span><br><span class="line">	initApplicationEventMulticaster();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 初始化特定上下文子类中的其他特殊 bean。</span></span><br><span class="line">	onRefresh();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 检查侦听器 bean 并注册它们。</span></span><br><span class="line">	registerListeners();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 实例化所有剩余的（非惰性初始化）单例。</span></span><br><span class="line">	finishBeanFactoryInitialization(beanFactory);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 最后一步：发布相应的事件。</span></span><br><span class="line">	finishRefresh();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">	<span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">		logger.warn(<span class="string">&quot;Exception encountered during context initialization - &quot;</span> + <span class="string">&quot;cancelling refresh attempt: &quot;</span> + ex);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 销毁已经创建的单例以避免悬空资源。</span></span><br><span class="line">	destroyBeans();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 重置&#x27;活动&#x27;标志。</span></span><br><span class="line">	cancelRefresh(ex);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将异常传播给调用者。</span></span><br><span class="line">	<span class="keyword">throw</span> ex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// 重置 Spring 核心中的常见自省缓存，因为我们 </span></span><br><span class="line">    <span class="comment">// 可能不再需要单例 bean 的元数据...</span></span><br><span class="line">    resetCommonCaches();</span><br><span class="line">	contextRefresh.end();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -380,8 +381,6 @@
 <p>在 <code>processConfigBeanDefinitions</code> 这个方法中找出所有的 <code>@Configuration</code> 配置类，然后对每个配置类进项解析</p>
 <p>在方法 <code>parse</code> 中去选择以何种方式调用 <code>processConfigurationClass</code> 在 <code>retrieveBeanMethodMetadata</code> 找出有 <code>@bean</code> 的方法，将其注册到 <code>ConfigurationClass</code> 中解析完成，<code>loadBeanDefinitions</code> 这个方法正常就是将 <code>bean</code> 包装注册。</p>
 
-          
-        
       
     </div>
     
@@ -396,223 +395,38 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-ioc" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="秋语">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">GetBean 相关源码学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-11T00:00:00+08:00">
-                2022-07-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index">
-                    <span itemprop="name">spring</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/ioc/" itemprop="url" rel="index">
-                    <span itemprop="name">ioc</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/spring/" rel="tag"># spring</a>
           
-
+            <a href="/tags/ioc/" rel="tag"># ioc</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="创建-bean-的过程"><a href="#创建-bean-的过程" class="headerlink" title="创建 bean 的过程"></a>创建 <code>bean</code> 的过程</h1><p>调用 <code>beanfactory</code> 中的 <code>getBean</code> 中的方法得到类的实体</p>
-<p>其中方法中可以使用 <code>name</code> <code>requiredType</code> <code>args</code> 得到特定的类型</p>
-<p>有如下签名</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(String name, Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br></pre></td></tr></table></figure>
-
-<p>进入 <code>getBean</code> 之后进入 <code>doGetBean</code> 方法统一处理所有的 <code>getBean</code> </p>
-<p>在先去单例缓存中尝试取出 <code>bean</code> 如果没有 <code>bean</code> 通过 <code>singleton</code> 和 <code>prototype</code> 判断是创建单例还是原型</p>
-<ol>
-<li>单例</li>
-</ol>
-<p><code>AbstractBeanFactory.java</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sharedInstance = getSingleton(beanName, () -&gt; &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> createBean(beanName, mbd, args);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">	    <span class="comment">// 从单例缓存中显式删除实例：它可能已经放在那里</span></span><br><span class="line">	    <span class="comment">// 急切地通过创建过程，以允许循环引用解析。</span></span><br><span class="line">	    <span class="comment">// 还要删除任何接收到对 bean 的临时引用的 bean。</span></span><br><span class="line">	    destroySingleton(beanName);</span><br><span class="line">	    <span class="keyword">throw</span> ex;</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
-
-<p>调用 <code>createBean</code> 方法 创建 <code>bean</code> 同时注册进单例缓存中</p>
-<p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-<ol start="2">
-<li>原型</li>
-</ol>
-<p><code>AbstractBeanFactory.java</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">prototypeInstance</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	beforePrototypeCreation(beanName);</span><br><span class="line">	prototypeInstance = createBean(beanName, mbd, args);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">	afterPrototypeCreation(beanName);</span><br><span class="line">&#125;</span><br><span class="line">beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
-
-<p>调用 <code>beforePrototypeCreation</code></p>
-<p>调用 <code>createBean</code> 方法 创建 <code>bean</code></p>
-<p>调用 <code>afterPrototypeCreation</code></p>
-<p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-<p><small> <code>getObjectForBeanInstance</code> 这个方法 主要是获取给定 bean 实例的对象，bean 实例本身或其创建的对象（如果是 FactoryBean） </small></p>
-<p>然后就是进入 <code>createBean</code> 方法之中执行 <code>doCreateBean</code> 方法加载创建类的细节</p>
-<h1 id="在-doCreateBean-方法中"><a href="#在-doCreateBean-方法中" class="headerlink" title="在 doCreateBean 方法中"></a>在 <code>doCreateBean</code> 方法中</h1><ol>
-<li><p>实例化 <code>bean</code> 调用 <code>createBeanInstance</code></p>
-<ol>
-<li>如果是通过 <code>@Bean</code> 加载 <code>bean</code> 的话，调用 <code>instantiateUsingFactoryMethod</code> 通过方法实例化</li>
-<li>匹配类的构造器，通过构造器将类实例化</li>
-</ol>
-</li>
-<li><p>填充 <code>bean</code> 中的字段</p>
-<ol>
-<li>填充字段的方案是由 <code>RootBeanDefinition</code> 这个包装类中的 <code>PropertyValues</code> 字段</li>
-<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段 </li>
-<li>如果使用注解的方式加载 <code>bean</code> 的话还会加载 <code>AutowiredAnnotationProcessor</code> 这样一个类，在填充的会使用其实现的一个 <code>postProcessProperties</code> 方式读取带有 <code>@Autowired</code> 的代码进行代码字段的注入</li>
-</ol>
-</li>
-<li><p>初始化 <code>bean</code> </p>
-<ol>
-<li>调用 <code>Aware</code> 容器感知功能其执行的顺序是 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BeanNameAware</span><br><span class="line">BeanClassLoaderAware</span><br><span class="line">BeanFactoryAware</span><br></pre></td></tr></table></figure>
- 通过这些方法可以在当前 <code>bean</code> 中后的例如: <code>bean name</code> <code>class loader</code> <code>bean factory</code> 等一些基础信息</li>
-<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessBeforeInitialization</code></li>
-<li>调用用户自定义的 <code>init method</code></li>
-<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessAfterInitialization</code></li>
-</ol>
-</li>
-<li><p>通过 <code>earlySingletonExposure</code> 解决依赖循环的问题</p>
-</li>
-<li><p>将该 <code>bean</code> 注册进 <code>disposable</code> 列表中</p>
-</li>
-</ol>
-<p>返回类型</p>
-<p>得到 <code>bean</code> 的整体流程结束</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="next" title="GetBean 相关源码学习">
+                <i class="fa fa-chevron-left"></i> GetBean 相关源码学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -622,10 +436,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -633,6 +448,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -653,8 +472,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -734,6 +562,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96-bean-%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">读取 bean 的过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xml-%E8%AF%BB%E5%8F%96%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">xml 读取方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java-%E6%96%B9%E6%B3%95%E5%8A%A0%E8%BD%BD"><span class="nav-number">3.</span> <span class="nav-text">java 方法加载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -874,6 +718,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
