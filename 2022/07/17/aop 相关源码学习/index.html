@@ -87,7 +87,7 @@
 <meta property="og:description" content="aop 相关源码学习从使用 bean 的角度出发大概看一下源码 AbstractAutowireCapableBeanFactory 中的初始化 bean 的方法 1234567891011121314Object wrappedBean &#x3D; bean;if (mbd &#x3D;&#x3D; null || !mbd.isSynthetic()) &amp;#123;	wrappedBean &#x3D; applyBeanPost">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-07-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-07-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-17T16:00:00.000Z">
 <meta property="article:author" content="秋语">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="aop">
@@ -299,8 +299,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2022-07-17T00:00:00+08:00">
-                2022-07-17
+              <time title="更新于" itemprop="dateModified" datetime="2022-07-18T00:00:00+08:00">
+                2022-07-18
               </time>
             
           </span>
@@ -395,6 +395,18 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">this</span>.currentInterceptorIndex == <span class="built_in">this</span>.interceptorsAndDynamicMethodMatchers.size() - <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> invokeJoinpoint();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>而这段代码则是确定了调用目标类的方法在中间使用</p>
+<p>现在可以下一个定义就是 <code>aop</code> 是通过动态来实现这个事的</p>
+<p>但是问题又来了 <code>interceptorsAndDynamicMethodMatchers</code> 是如何加载出来的</p>
+<p>其是通过</p>
+<p><code>AdvisorChainFactory</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">AdvisorChainFactory</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Determine a list of &#123;<span class="doctag">@link</span> org.aopalliance.intercept.MethodInterceptor&#125; objects</span></span><br><span class="line"><span class="comment">	 * for the given advisor chain configuration.</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> config the AOP configuration in the form of an Advised object</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> method the proxied method</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> targetClass the target class (may be &#123;<span class="doctag">@code</span> null&#125; to indicate a proxy without</span></span><br><span class="line"><span class="comment">	 * target object, in which case the method&#x27;s declaring class is the next best option)</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> a List of MethodInterceptors (may also include InterceptorAndDynamicMethodMatchers)</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	List&lt;Object&gt; <span class="title function_">getInterceptorsAndDynamicInterceptionAdvice</span><span class="params">(Advised config, Method method, <span class="meta">@Nullable</span> Class&lt;?&gt; targetClass)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>中的方法加载出来的</p>
+<p>他会在里面加载所有的的 <code>advisor</code> 筛选出所有合适的加入数组进行使用</p>
+<p>那么 <code>advisor</code> 又是如何被加入的呢</p>
+<p>他是在之前的 <code>createProxy</code> 方法中执行如下方法链<br><code>buildAdvisors</code> -&gt; <code>getAdvicesAndAdvisorsForBean</code> -&gt; <code>findEligibleAdvisors</code></p>
+<p>在这个方法中 <code>findCandidateAdvisors</code> 获得所有的 <code>bean</code> 如果其是 <code>advisor</code></p>
+<p>然后在通过 <code>findAdvisorsThatCanApply</code> 去匹配 <code>advisor</code> 和目标类是否匹配</p>
 
       
     </div>
