@@ -244,6 +244,212 @@
   
   
 
+  <article class="post post-type-web" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/04/spring%20boot%20web%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋语">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/08/04/spring%20boot%20web%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">spring boot web 相关源码学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-04T00:00:00+08:00">
+                2022-08-04
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2022-08-04T00:00:00+08:00">
+                2022-08-04
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring-boot/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="spring-boot-web-相关源码学习"><a href="#spring-boot-web-相关源码学习" class="headerlink" title="spring boot web 相关源码学习"></a><code>spring boot web</code> 相关源码学习</h1><h2 id="spring-boot-自动加载机制"><a href="#spring-boot-自动加载机制" class="headerlink" title="spring boot 自动加载机制"></a><code>spring boot</code> 自动加载机制</h2><p>通过上面的论述, 先来看一下 <code>spring boot</code> 项目启动类上的注解 <code>SpringBootApplication</code> 是怎么长的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan(excludeFilters = &#123; @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),</span></span><br><span class="line"><span class="meta">		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) &#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootApplication &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = EnableAutoConfiguration.class)</span></span><br><span class="line">	Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = EnableAutoConfiguration.class)</span></span><br><span class="line">	String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;basePackages&quot;)</span></span><br><span class="line">	String[] scanBasePackages() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;basePackageClasses&quot;)</span></span><br><span class="line">	Class&lt;?&gt;[] scanBasePackageClasses() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;nameGenerator&quot;)</span></span><br><span class="line">	Class&lt;? <span class="keyword">extends</span> <span class="title class_">BeanNameGenerator</span>&gt; nameGenerator() <span class="keyword">default</span> BeanNameGenerator.class;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = Configuration.class)</span></span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">proxyBeanMethods</span><span class="params">()</span> <span class="keyword">default</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中的关键节点是 <code>EnableAutoConfiguration</code> 这个注解, 再来看一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@AutoConfigurationPackage</span></span><br><span class="line"><span class="meta">@Import(AutoConfigurationImportSelector.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAutoConfiguration &#123;</span><br><span class="line">	<span class="type">String</span> <span class="variable">ENABLED_OVERRIDE_PROPERTY</span> <span class="operator">=</span> <span class="string">&quot;spring.boot.enableautoconfiguration&quot;</span>;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其重要的导入类 <code>AutoConfigurationImportSelector</code> </p>
+<p>这个类会在方法 <code>processImports</code> 调用 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);</span><br></pre></td></tr></table></figure>
+
+<p>这样一段话去处理 <code>AutoConfigurationImportSelector</code> 再发方法中将其注册进 <code>deferredImportSelectors</code> 之中</p>
+<p>然后就是在方法 <code>parse</code> 方法中最后会调用的方法 <code>DeferredImportSelectorHandler.process</code> 方法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">()</span> &#123;</span><br><span class="line">	List&lt;DeferredImportSelectorHolder&gt; deferredImports = <span class="built_in">this</span>.deferredImportSelectors;</span><br><span class="line">	<span class="built_in">this</span>.deferredImportSelectors = <span class="literal">null</span>;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (deferredImports != <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="type">DeferredImportSelectorGroupingHandler</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DeferredImportSelectorGroupingHandler</span>();</span><br><span class="line">			deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);</span><br><span class="line">			deferredImports.forEach(handler::register);</span><br><span class="line">			handler.processGroupImports();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.deferredImportSelectors = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其会创建一个 <code>DeferredImportSelectorGroupingHandler</code> 的对象, 然后将 <code>handler</code> 通过 <code>register</code> 进行注册, 之后执行 <code>processGroupImports</code> 方法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">processGroupImports</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="keyword">for</span> (DeferredImportSelectorGrouping grouping : <span class="built_in">this</span>.groupings.values()) &#123;</span><br><span class="line">		Predicate&lt;String&gt; exclusionFilter = grouping.getCandidateFilter();</span><br><span class="line">		grouping.getImports().forEach(entry -&gt; &#123;</span><br><span class="line">			<span class="type">ConfigurationClass</span> <span class="variable">configurationClass</span> <span class="operator">=</span> <span class="built_in">this</span>.configurationClasses.get(entry.getMetadata());</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				processImports(configurationClass, asSourceClass(configurationClass, exclusionFilter),</span><br><span class="line">				Collections.singleton(asSourceClass(entry.getImportClassName(), exclusionFilter)),</span><br><span class="line">				exclusionFilter, <span class="literal">false</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (BeanDefinitionStoreException ex) &#123;</span><br><span class="line">				<span class="keyword">throw</span> ex;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BeanDefinitionStoreException</span>(</span><br><span class="line">					<span class="string">&quot;Failed to process import candidates for configuration class [&quot;</span> +</span><br><span class="line">						configurationClass.getMetadata().getClassName() + <span class="string">&quot;]&quot;</span>, ex);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>他会遍历每个被中注册的 <code>groupings</code> 并且调用其 <code>getImports</code> 在这个方法中会从 <code>META-INF/spring.factories</code> 去自动加载类并且进行筛选<br>之后通过函数表达式将所有的类当成 <code>ConfigurationClass</code> 通过 <code>processImports</code> 进行加载</p>
+<p>到这里 <code>spring boot</code> 的自动加载机制算是告一段落</p>
+<h2 id="spring-boot-web-启动"><a href="#spring-boot-web-启动" class="headerlink" title="spring boot web 启动"></a><code>spring boot web</code> 启动</h2><p>先来看 <code>SpringApplication.run</code> 方法</p>
+<p>在这个方法中他回去加载环境输出 <code>banner</code> 和创建 <code>context</code> 该 <code>context</code> 的类型为 <code>AnnotationConfigServletWebServerApplicationContext</code></p>
+<p>在创建了 <code>context</code> 会去使用 <code>refreshContext</code> </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">refreshContext</span><span class="params">(ConfigurableApplicationContext context)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.registerShutdownHook) &#123;</span><br><span class="line">		shutdownHook.registerApplicationContext(context);</span><br><span class="line">	&#125;</span><br><span class="line">	refresh(context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个方法中调用了 <code>refresh</code> 方法去加载注册所有的 <code>bean</code> 同时在 <code>refresh</code> 中的 <code>onRefresh</code> 也是被重写过的</p>
+<p>其去加载服务器方法如下 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">createWebServer</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">WebServer</span> <span class="variable">webServer</span> <span class="operator">=</span> <span class="built_in">this</span>.webServer;</span><br><span class="line">	<span class="type">ServletContext</span> <span class="variable">servletContext</span> <span class="operator">=</span> getServletContext();</span><br><span class="line">	<span class="keyword">if</span> (webServer == <span class="literal">null</span> &amp;&amp; servletContext == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="type">StartupStep</span> <span class="variable">createWebServer</span> <span class="operator">=</span> <span class="built_in">this</span>.getApplicationStartup().start(<span class="string">&quot;spring.boot.webserver.create&quot;</span>);</span><br><span class="line">		<span class="type">ServletWebServerFactory</span> <span class="variable">factory</span> <span class="operator">=</span> getWebServerFactory();</span><br><span class="line">		createWebServer.tag(<span class="string">&quot;factory&quot;</span>, factory.getClass().toString());</span><br><span class="line">		<span class="built_in">this</span>.webServer = factory.getWebServer(getSelfInitializer());</span><br><span class="line">		createWebServer.end();</span><br><span class="line">		getBeanFactory().registerSingleton(<span class="string">&quot;webServerGracefulShutdown&quot;</span>,</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">WebServerGracefulShutdownLifecycle</span>(<span class="built_in">this</span>.webServer));</span><br><span class="line">		getBeanFactory().registerSingleton(<span class="string">&quot;webServerStartStop&quot;</span>,</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">WebServerStartStopLifecycle</span>(<span class="built_in">this</span>, <span class="built_in">this</span>.webServer));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (servletContext != <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			getSelfInitializer().onStartup(servletContext);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (ServletException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ApplicationContextException</span>(<span class="string">&quot;Cannot initialize servlet context&quot;</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	initPropertySources();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面举例常见的 <code>tomcat</code> 的加载举例</p>
+<p>首先该方法通过 <code>getWebServerFactory</code> 方法获得一个被当作 <code>bean</code> 加载的 <code>web</code> 服务器</p>
+<p>然后再通过 <code>factory.getWebServer</code> 方法得到 <code>web</code> 服务器的实例并进行注册其的关机方法</p>
+<p>继续看内嵌的 <code>tomcat</code> 是如何启动加载的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> WebServer <span class="title function_">getWebServer</span><span class="params">(ServletContextInitializer... initializers)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.disableMBeanRegistry) &#123;</span><br><span class="line">		Registry.disableRegistry();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">Tomcat</span> <span class="variable">tomcat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Tomcat</span>();</span><br><span class="line">	<span class="type">File</span> <span class="variable">baseDir</span> <span class="operator">=</span> (<span class="built_in">this</span>.baseDirectory != <span class="literal">null</span>) ? <span class="built_in">this</span>.baseDirectory : createTempDir(<span class="string">&quot;tomcat&quot;</span>);</span><br><span class="line">	tomcat.setBaseDir(baseDir.getAbsolutePath());</span><br><span class="line">	<span class="keyword">for</span> (LifecycleListener listener : <span class="built_in">this</span>.serverLifecycleListeners) &#123;</span><br><span class="line">		tomcat.getServer().addLifecycleListener(listener);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">Connector</span> <span class="variable">connector</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Connector</span>(<span class="built_in">this</span>.protocol);</span><br><span class="line">	connector.setThrowOnFailure(<span class="literal">true</span>);</span><br><span class="line">	tomcat.getService().addConnector(connector);</span><br><span class="line">	customizeConnector(connector);</span><br><span class="line">	tomcat.setConnector(connector);</span><br><span class="line">	tomcat.getHost().setAutoDeploy(<span class="literal">false</span>);</span><br><span class="line">	configureEngine(tomcat.getEngine());</span><br><span class="line">	<span class="keyword">for</span> (Connector additionalConnector : <span class="built_in">this</span>.additionalTomcatConnectors) &#123;</span><br><span class="line">		tomcat.getService().addConnector(additionalConnector);</span><br><span class="line">	&#125;</span><br><span class="line">	prepareContext(tomcat.getHost(), initializers);</span><br><span class="line">	<span class="keyword">return</span> getTomcatWebServer(tomcat);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个方法中其创建了一个 <code>tomcat</code> 实例, 同时设置其的 <code>context</code> 还会调用方法 <code>initializers</code> </p>
+<p>其会在 <code>getSelfInitializer</code> 方法中加载</p>
+<p>同时在 <code>context</code> 方法中还会设置一个实现 <code>ServletContainerInitializer</code> 的类 <code>TomcatStarter</code> 它实现了 <code>onStartup</code> 这样一个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onStartup</span><span class="params">(Set&lt;Class&lt;?&gt;&gt; classes, ServletContext servletContext)</span> <span class="keyword">throws</span> ServletException &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> (ServletContextInitializer initializer : <span class="built_in">this</span>.initializers) &#123;</span><br><span class="line">			initializer.onStartup(servletContext);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">		<span class="built_in">this</span>.startUpException = ex;</span><br><span class="line">		<span class="comment">// Prevent Tomcat from logging and re-throwing when we know we can</span></span><br><span class="line">		<span class="comment">// deal with it in the main thread, but log for information here.</span></span><br><span class="line">		<span class="keyword">if</span> (logger.isErrorEnabled()) &#123;</span><br><span class="line">			logger.error(<span class="string">&quot;Error starting Tomcat context. Exception: &quot;</span> + ex.getClass().getName() + <span class="string">&quot;. Message: &quot;</span></span><br><span class="line">					+ ex.getMessage());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这方法中它会在启动的时候加载所有的 <code>initizlizers</code> 如关键的 <code>dispatchServlet</code> </p>
+<p><code>tomcat</code> 启动到这就差不多了</p>
+<p>由于加载了 <code>dispatchServlet</code> 下面的问题又回到了 <code>spring mvc</code> 中了</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
   <article class="post post-type-mybatis" itemscope itemtype="http://schema.org/Article">
   
   
@@ -576,212 +782,6 @@
 <p>至此 <code>spring webmvc</code> 初始化完成</p>
 <h1 id="接口的请求"><a href="#接口的请求" class="headerlink" title="接口的请求"></a>接口的请求</h1><p>在 <code>FrameworkServlet</code> 中实现了所有的 <code>Servlet</code> 请求方案，同时这些请求方案都是在执行一个方法叫做 <code>processRequest</code> 来完成方法请求和映射在进行初始化之后则调用 <code>doService</code> 方法在去执行 <code>doDispatch</code></p>
 <p>在 <code>doDispatch</code> 中会去 <code>handlerMappings</code> 中进行映射选择出合适的方式经行调用然后调用 <code>handle</code> 进行方法的调用同时将方法的结果放在方法 <code>processDispatchResult</code> 中处理查看放回的东西可以是 <code>ModelAndView</code>，也可以是要解析为 <code>ModelAndView</code> 的 <code>Exception</code></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-web" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/20/spring%20boot%20web%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="秋语">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/07/20/spring%20boot%20web%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">spring boot web 相关源码学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-20T00:00:00+08:00">
-                2022-07-20
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2022-07-20T00:00:00+08:00">
-                2022-07-20
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
-                    <span itemprop="name">spring boot</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring-boot/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="spring-boot-web-相关源码学习"><a href="#spring-boot-web-相关源码学习" class="headerlink" title="spring boot web 相关源码学习"></a><code>spring boot web</code> 相关源码学习</h1><h2 id="spring-boot-自动加载机制"><a href="#spring-boot-自动加载机制" class="headerlink" title="spring boot 自动加载机制"></a><code>spring boot</code> 自动加载机制</h2><p>通过上面的论述, 先来看一下 <code>spring boot</code> 项目启动类上的注解 <code>SpringBootApplication</code> 是怎么长的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan(excludeFilters = &#123; @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),</span></span><br><span class="line"><span class="meta">		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) &#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootApplication &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = EnableAutoConfiguration.class)</span></span><br><span class="line">	Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = EnableAutoConfiguration.class)</span></span><br><span class="line">	String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;basePackages&quot;)</span></span><br><span class="line">	String[] scanBasePackages() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;basePackageClasses&quot;)</span></span><br><span class="line">	Class&lt;?&gt;[] scanBasePackageClasses() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = ComponentScan.class, attribute = &quot;nameGenerator&quot;)</span></span><br><span class="line">	Class&lt;? <span class="keyword">extends</span> <span class="title class_">BeanNameGenerator</span>&gt; nameGenerator() <span class="keyword">default</span> BeanNameGenerator.class;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@AliasFor(annotation = Configuration.class)</span></span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">proxyBeanMethods</span><span class="params">()</span> <span class="keyword">default</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其中的关键节点是 <code>EnableAutoConfiguration</code> 这个注解, 再来看一下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@AutoConfigurationPackage</span></span><br><span class="line"><span class="meta">@Import(AutoConfigurationImportSelector.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAutoConfiguration &#123;</span><br><span class="line">	<span class="type">String</span> <span class="variable">ENABLED_OVERRIDE_PROPERTY</span> <span class="operator">=</span> <span class="string">&quot;spring.boot.enableautoconfiguration&quot;</span>;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其重要的导入类 <code>AutoConfigurationImportSelector</code> </p>
-<p>这个类会在方法 <code>processImports</code> 调用 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);</span><br></pre></td></tr></table></figure>
-
-<p>这样一段话去处理 <code>AutoConfigurationImportSelector</code> 再发方法中将其注册进 <code>deferredImportSelectors</code> 之中</p>
-<p>然后就是在方法 <code>parse</code> 方法中最后会调用的方法 <code>DeferredImportSelectorHandler.process</code> 方法如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">()</span> &#123;</span><br><span class="line">	List&lt;DeferredImportSelectorHolder&gt; deferredImports = <span class="built_in">this</span>.deferredImportSelectors;</span><br><span class="line">	<span class="built_in">this</span>.deferredImportSelectors = <span class="literal">null</span>;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (deferredImports != <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="type">DeferredImportSelectorGroupingHandler</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DeferredImportSelectorGroupingHandler</span>();</span><br><span class="line">			deferredImports.sort(DEFERRED_IMPORT_COMPARATOR);</span><br><span class="line">			deferredImports.forEach(handler::register);</span><br><span class="line">			handler.processGroupImports();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.deferredImportSelectors = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其会创建一个 <code>DeferredImportSelectorGroupingHandler</code> 的对象, 然后将 <code>handler</code> 通过 <code>register</code> 进行注册, 之后执行 <code>processGroupImports</code> 方法如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">processGroupImports</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="keyword">for</span> (DeferredImportSelectorGrouping grouping : <span class="built_in">this</span>.groupings.values()) &#123;</span><br><span class="line">		Predicate&lt;String&gt; exclusionFilter = grouping.getCandidateFilter();</span><br><span class="line">		grouping.getImports().forEach(entry -&gt; &#123;</span><br><span class="line">			<span class="type">ConfigurationClass</span> <span class="variable">configurationClass</span> <span class="operator">=</span> <span class="built_in">this</span>.configurationClasses.get(entry.getMetadata());</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				processImports(configurationClass, asSourceClass(configurationClass, exclusionFilter),</span><br><span class="line">				Collections.singleton(asSourceClass(entry.getImportClassName(), exclusionFilter)),</span><br><span class="line">				exclusionFilter, <span class="literal">false</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (BeanDefinitionStoreException ex) &#123;</span><br><span class="line">				<span class="keyword">throw</span> ex;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BeanDefinitionStoreException</span>(</span><br><span class="line">					<span class="string">&quot;Failed to process import candidates for configuration class [&quot;</span> +</span><br><span class="line">						configurationClass.getMetadata().getClassName() + <span class="string">&quot;]&quot;</span>, ex);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>他会遍历每个被中注册的 <code>groupings</code> 并且调用其 <code>getImports</code> 在这个方法中会从 <code>META-INF/spring.factories</code> 去自动加载类并且进行筛选<br>之后通过函数表达式将所有的类当成 <code>ConfigurationClass</code> 通过 <code>processImports</code> 进行加载</p>
-<p>到这里 <code>spring boot</code> 的自动加载机制算是告一段落</p>
-<h2 id="spring-boot-web-启动"><a href="#spring-boot-web-启动" class="headerlink" title="spring boot web 启动"></a><code>spring boot web</code> 启动</h2><p>先来看 <code>SpringApplication.run</code> 方法</p>
-<p>在这个方法中他回去加载环境输出 <code>banner</code> 和创建 <code>context</code> 该 <code>context</code> 的类型为 <code>AnnotationConfigServletWebServerApplicationContext</code></p>
-<p>在创建了 <code>context</code> 会去使用 <code>refreshContext</code> </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">refreshContext</span><span class="params">(ConfigurableApplicationContext context)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.registerShutdownHook) &#123;</span><br><span class="line">		shutdownHook.registerApplicationContext(context);</span><br><span class="line">	&#125;</span><br><span class="line">	refresh(context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个方法中调用了 <code>refresh</code> 方法去加载注册所有的 <code>bean</code> 同时在 <code>refresh</code> 中的 <code>onRefresh</code> 也是被重写过的</p>
-<p>其去加载服务器方法如下 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">createWebServer</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">WebServer</span> <span class="variable">webServer</span> <span class="operator">=</span> <span class="built_in">this</span>.webServer;</span><br><span class="line">	<span class="type">ServletContext</span> <span class="variable">servletContext</span> <span class="operator">=</span> getServletContext();</span><br><span class="line">	<span class="keyword">if</span> (webServer == <span class="literal">null</span> &amp;&amp; servletContext == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="type">StartupStep</span> <span class="variable">createWebServer</span> <span class="operator">=</span> <span class="built_in">this</span>.getApplicationStartup().start(<span class="string">&quot;spring.boot.webserver.create&quot;</span>);</span><br><span class="line">		<span class="type">ServletWebServerFactory</span> <span class="variable">factory</span> <span class="operator">=</span> getWebServerFactory();</span><br><span class="line">		createWebServer.tag(<span class="string">&quot;factory&quot;</span>, factory.getClass().toString());</span><br><span class="line">		<span class="built_in">this</span>.webServer = factory.getWebServer(getSelfInitializer());</span><br><span class="line">		createWebServer.end();</span><br><span class="line">		getBeanFactory().registerSingleton(<span class="string">&quot;webServerGracefulShutdown&quot;</span>,</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">WebServerGracefulShutdownLifecycle</span>(<span class="built_in">this</span>.webServer));</span><br><span class="line">		getBeanFactory().registerSingleton(<span class="string">&quot;webServerStartStop&quot;</span>,</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">WebServerStartStopLifecycle</span>(<span class="built_in">this</span>, <span class="built_in">this</span>.webServer));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (servletContext != <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			getSelfInitializer().onStartup(servletContext);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (ServletException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ApplicationContextException</span>(<span class="string">&quot;Cannot initialize servlet context&quot;</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	initPropertySources();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面举例常见的 <code>tomcat</code> 的加载举例</p>
-<p>首先该方法通过 <code>getWebServerFactory</code> 方法获得一个被当作 <code>bean</code> 加载的 <code>web</code> 服务器</p>
-<p>然后再通过 <code>factory.getWebServer</code> 方法得到 <code>web</code> 服务器的实例并进行注册其的关机方法</p>
-<p>继续看内嵌的 <code>tomcat</code> 是如何启动加载的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> WebServer <span class="title function_">getWebServer</span><span class="params">(ServletContextInitializer... initializers)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.disableMBeanRegistry) &#123;</span><br><span class="line">		Registry.disableRegistry();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">Tomcat</span> <span class="variable">tomcat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Tomcat</span>();</span><br><span class="line">	<span class="type">File</span> <span class="variable">baseDir</span> <span class="operator">=</span> (<span class="built_in">this</span>.baseDirectory != <span class="literal">null</span>) ? <span class="built_in">this</span>.baseDirectory : createTempDir(<span class="string">&quot;tomcat&quot;</span>);</span><br><span class="line">	tomcat.setBaseDir(baseDir.getAbsolutePath());</span><br><span class="line">	<span class="keyword">for</span> (LifecycleListener listener : <span class="built_in">this</span>.serverLifecycleListeners) &#123;</span><br><span class="line">		tomcat.getServer().addLifecycleListener(listener);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">Connector</span> <span class="variable">connector</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Connector</span>(<span class="built_in">this</span>.protocol);</span><br><span class="line">	connector.setThrowOnFailure(<span class="literal">true</span>);</span><br><span class="line">	tomcat.getService().addConnector(connector);</span><br><span class="line">	customizeConnector(connector);</span><br><span class="line">	tomcat.setConnector(connector);</span><br><span class="line">	tomcat.getHost().setAutoDeploy(<span class="literal">false</span>);</span><br><span class="line">	configureEngine(tomcat.getEngine());</span><br><span class="line">	<span class="keyword">for</span> (Connector additionalConnector : <span class="built_in">this</span>.additionalTomcatConnectors) &#123;</span><br><span class="line">		tomcat.getService().addConnector(additionalConnector);</span><br><span class="line">	&#125;</span><br><span class="line">	prepareContext(tomcat.getHost(), initializers);</span><br><span class="line">	<span class="keyword">return</span> getTomcatWebServer(tomcat);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个方法中其创建了一个 <code>tomcat</code> 实例, 同时设置其的 <code>context</code> 还会调用方法 <code>initializers</code> </p>
-<p>其会在 <code>getSelfInitializer</code> 方法中加载</p>
-<p>同时在 <code>context</code> 方法中还会设置一个实现 <code>ServletContainerInitializer</code> 的类 <code>TomcatStarter</code> 它实现了 <code>onStartup</code> 这样一个方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onStartup</span><span class="params">(Set&lt;Class&lt;?&gt;&gt; classes, ServletContext servletContext)</span> <span class="keyword">throws</span> ServletException &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> (ServletContextInitializer initializer : <span class="built_in">this</span>.initializers) &#123;</span><br><span class="line">			initializer.onStartup(servletContext);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">		<span class="built_in">this</span>.startUpException = ex;</span><br><span class="line">		<span class="comment">// Prevent Tomcat from logging and re-throwing when we know we can</span></span><br><span class="line">		<span class="comment">// deal with it in the main thread, but log for information here.</span></span><br><span class="line">		<span class="keyword">if</span> (logger.isErrorEnabled()) &#123;</span><br><span class="line">			logger.error(<span class="string">&quot;Error starting Tomcat context. Exception: &quot;</span> + ex.getClass().getName() + <span class="string">&quot;. Message: &quot;</span></span><br><span class="line">					+ ex.getMessage());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这方法中它会在启动的时候加载所有的 <code>initizlizers</code> 如关键的 <code>dispatchServlet</code> </p>
-<p><code>tomcat</code> 启动到这就差不多了</p>
-<p>由于加载了 <code>dispatchServlet</code> 下面的问题又回到了 <code>spring mvc</code> 中了</p>
 
           
         
