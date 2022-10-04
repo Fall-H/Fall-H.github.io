@@ -386,7 +386,6 @@
 <p>到此将一切数据准备好并交由 <code>mybatis</code> 的 <code>addMappedStatement</code> 方法去处理映射关系</p>
 ]]></content>
       <categories>
-        <category>mybatis-spring</category>
         <category>mybatis-plus</category>
       </categories>
       <tags>
