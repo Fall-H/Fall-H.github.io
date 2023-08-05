@@ -471,8 +471,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Java 重排序问题</title>
-    <url>/2023/08/05/Java%20%E9%87%8D%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/</url>
+    <title>指令重排序问题</title>
+    <url>/2023/08/05/%E6%8C%87%E4%BB%A4%E9%87%8D%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h1 id="为什么需要重排序"><a href="#为什么需要重排序" class="headerlink" title="为什么需要重排序"></a>为什么需要重排序</h1><p>一个简单的问题 CPU 的资源的优化，当 CPU 在执行任务 A 时，同时可以执行任务 B, 因为任务 A B 之间没有任何依赖关系，所以任务 A B 重排，提高了 CPU 的效率</p>
 <h1 id="为什么会产生问题"><a href="#为什么会产生问题" class="headerlink" title="为什么会产生问题"></a>为什么会产生问题</h1><p>首先明确一点，重排序是必须的，因为在计算机系统中 CPU 是极其宝贵的资源。</p>
 <p>那么问题是如何产生的呢，一般在 CPU (X86) 中每个核心拥有 L1、L2缓存独占和公用的 L3 缓存，在 CPU 中的缓存拥有一致性协议，其缓存不会出现不一致的问题，也就不会有<strong>内存可见性</strong>的问题<br>虽然这几个缓存是有一致性协议，但是协议吗，对于 CPU 的性能是由损耗的，所以在 CPU 内部还有 Store Buffer、Load Buffer 等之类的 Buffer，这些 Buffer 与其他的缓存是不一致的，是异步的。</p>
