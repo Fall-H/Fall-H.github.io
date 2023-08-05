@@ -470,4 +470,64 @@
         <tag>多线程</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Java 重排序问题</title>
+    <url>/2023/08/05/Java%20%E9%87%8D%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="为什么需要重排序"><a href="#为什么需要重排序" class="headerlink" title="为什么需要重排序"></a>为什么需要重排序</h1><p>一个简单的问题 CPU 的资源的优化，当 CPU 在执行任务 A 时，同时可以执行任务 B, 因为任务 A B 之间没有任何依赖关系，所以任务 A B 重排，提高了 CPU 的效率</p>
+<h1 id="为什么会产生问题"><a href="#为什么会产生问题" class="headerlink" title="为什么会产生问题"></a>为什么会产生问题</h1><p>首先明确一点，重排序是必须的，因为在计算机系统中 CPU 是极其宝贵的资源。</p>
+<p>那么问题是如何产生的呢，一般在 CPU (X86) 中每个核心拥有 L1、L2缓存独占和公用的 L3 缓存，在 CPU 中的缓存拥有一致性协议，其缓存不会出现不一致的问题，也就不会有<strong>内存可见性</strong>的问题<br>虽然这几个缓存是有一致性协议，但是协议吗，对于 CPU 的性能是由损耗的，所以在 CPU 内部还有 Store Buffer、Load Buffer 等之类的 Buffer，这些 Buffer 与其他的缓存是不一致的，是异步的。</p>
+<p>也就可以说 CPU 和主内存是异步，就有<strong>内存可见性</strong>的问题。</p>
+<p>举个例子也就是会产生如下问题：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">线程1</span></span><br><span class="line">X = 1</span><br><span class="line">a = Y</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">线程2</span></span><br><span class="line">Y = 1</span><br><span class="line">b = X</span><br></pre></td></tr></table></figure>
+
+<p>其会产生那么几个结果:</p>
+<ul>
+<li>a&#x3D;0, b&#x3D;1</li>
+<li>a&#x3D;1, b&#x3D;0</li>
+<li>a&#x3D;1, b&#x3D;1</li>
+</ul>
+<p>这就是由于<strong>内存可见性</strong>和<strong>重排序</strong>共同产生的问题</p>
+<h1 id="重排序场景"><a href="#重排序场景" class="headerlink" title="重排序场景"></a>重排序场景</h1><h2 id="编译器重排序"><a href="#编译器重排序" class="headerlink" title="编译器重排序"></a>编译器重排序</h2><p>对于没有先后依赖关系的语句，编译器可以重新调整语句的执行顺序</p>
+<h2 id="CPU-指令重排序"><a href="#CPU-指令重排序" class="headerlink" title="CPU 指令重排序"></a>CPU 指令重排序</h2><p>在指令级别，让没有依赖关系的多条指令并行</p>
+<h2 id="CPU-内存重排序"><a href="#CPU-内存重排序" class="headerlink" title="CPU 内存重排序"></a>CPU 内存重排序</h2><p>CPU 有自己的缓存，指令的执行顺序和写入主内存的顺序不完全一致</p>
+<h1 id="as-if-serial-语义"><a href="#as-if-serial-语义" class="headerlink" title="as-if-serial 语义"></a>as-if-serial 语义</h1><p>既然我们已知晓，其产生的问题和场景，那么我们现在就要开始解决这么个问题了</p>
+<h2 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h2><p>解决多线程的问题前，我们先论述单线程的解决方案 **<code>as-if-serial 语义</code>**，只要是单线程无论其是什么语言，只要操作之间没有数据依赖性，那么如何执行都是没有问题的，代码看起来就像完全串行地一行行执行一遍。</p>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><p>那么在多线程中其是如何的呢，由于多线程的复杂性，CPU 和编译器无法完全理解，从而给出最合理的优化。</p>
+<p>所以在多线程的解决方案就是，保证每个线程内部都是  **<code>as-if-serial 语义</code>**，但对于公共的变量和线程之间的读写，则不会考虑</p>
+<h1 id="happen-before"><a href="#happen-before" class="headerlink" title="happen-before"></a>happen-before</h1><p>为了解决在多线程场景下，什么时候可以重排序，什么时候不可以进行重排序，Java 引入 JMM 这个模型来定义一套规范，然后通过 <code>happen-before</code> 去描述这个规范。</p>
+<p>那么 <code>happen-before</code> 到底是什么呢，假设 A <code>happen-before</code> B，那么就代表如果 A 在 B 之前执行，则 A 的执行结果必须对 B 可见。定义了可见性的约束，也就定义了重排序的约束。</p>
+<p>同时 <code>happen-before</code> 具有传递性，即如 A <code>happen-before</code> B， B <code>happen-before</code> C，就有 A <code>happen-before</code> C 这个性质。</p>
+<h2 id="happen-before-规则"><a href="#happen-before-规则" class="headerlink" title="happen-before 规则"></a>happen-before 规则</h2><ul>
+<li>单线程中的每个操作，happen-before 于该线程中任意后续操作</li>
+<li>对 volatile 变量的写，happen-before 于后续这个变量的读</li>
+<li>对 synchronized 的解锁，happen-before 于后续这个锁的加锁</li>
+<li>对 final 变量的写，happen-before 于 final 域对象的读，happen-before 于后续对 final 变量的读</li>
+</ul>
+<h1 id="内存屏障"><a href="#内存屏障" class="headerlink" title="内存屏障"></a>内存屏障</h1><p>当然以上都是为了解决 CPU 内存重排序这个场景的问题，那么的剩下的问题如何解决呢，这时候就引入了内存屏障的概念了。</p>
+<p>编译器的内存屏障，只是为了告诉编译器不要对那些指令进行重排序。当编译完成，之后这种屏障就会消失了，CPU 不会感知到他的存在。</p>
+<p>CPU 的内存屏障是 CPU 提供的指令，可以由开发者直接调用</p>
+<h2 id="CPU-内存屏障"><a href="#CPU-内存屏障" class="headerlink" title="CPU 内存屏障"></a>CPU 内存屏障</h2><ul>
+<li>LoadLoad: 禁止读和读的重排序</li>
+<li>StoreStore: 禁止写和写的重排序</li>
+<li>LoadStore: 禁止读和写的重排序</li>
+<li>StoreLoad: 禁止写和读的重排序</li>
+</ul>
+<h2 id="JDK-内存屏障"><a href="#JDK-内存屏障" class="headerlink" title="JDK 内存屏障"></a>JDK 内存屏障</h2><p>JDK 中的内存屏障是由 CPU 内存屏障组合而成</p>
+<ul>
+<li>loadFence &#x3D; LoadLoad + LoadStore</li>
+<li>storeFence &#x3D; StoreStore + LoadStore</li>
+<li>fullFence &#x3D; loadFence + storeFence + StoreLoad</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>Java 并发实现原理:JDK 源码剖析(余春龙)</li>
+<li><a href="https://zhuanlan.zhihu.com/p/298448987">https://zhuanlan.zhihu.com/p/298448987</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>多线程</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
 </search>
