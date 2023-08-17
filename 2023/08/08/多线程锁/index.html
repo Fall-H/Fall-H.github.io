@@ -87,7 +87,7 @@
 <meta property="og:description" content="锁为什么需要锁在多线程并发场景下，为了防止多个线程同时访问同一个内存地址，造成数据的不一致，所以引入了锁的概念 锁的分类互斥锁保证同一时间段，只有一个线程可以对临界资源进行操作，也就是说当线 A 在操作临界资源时，线程 B 无法操作其，只有当线程 A 退出临界资源线程 B 才能对临界资源操作 本质上来说互斥锁是通过一个 state 变量，来标记锁的状态，对 state 操作来保证线程的安全 使用M">
 <meta property="og:locale">
 <meta property="article:published_time" content="2023-08-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-08-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-08-16T16:00:00.000Z">
 <meta property="article:author" content="秋语">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
@@ -298,8 +298,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-08-08T00:00:00+08:00">
-                2023-08-08
+              <time title="更新于" itemprop="dateModified" datetime="2023-08-17T00:00:00+08:00">
+                2023-08-17
               </time>
             
           </span>
@@ -394,6 +394,8 @@
 <li>提高性能</li>
 <li>避免读到临时数据</li>
 </ul>
+<h3 id="顺序锁"><a href="#顺序锁" class="headerlink" title="顺序锁"></a>顺序锁</h3><p>当读者在读的时候也允许写者继续运行，这样写者就不用再等待了，缺点是是有些时候读者不得不反复多次相同的数据直到它获得有效的副本</p>
+<p>每个顺序锁包含两个字段，一个 <code>lock</code> 字段和一个 <code>sequence</code> 字段，后者字段是一个顺序计数器，每个读者都必须再读取数据前后两次读顺序计数器，并检查读到的值是否相同，如果不相同，说明有写者开始写并增加了顺序计数器，换而言之，每一个写者再写数据的时候，需要增加 <code>sequence</code> 中的数据，再写完之后还需要再次增加 <code>sequence</code>，这也就说明当 <code>sequence</code> 为寄数是其是正在写的状态，而双数是一个稳定的稳定状态</p>
 <h3 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h3><p>其认为多线程同时修改共享资源的概率比较高，比较容易出现冲突，使用在访问之前，需要先上锁</p>
 <p>互斥锁、自旋锁、读写锁都属于悲观锁</p>
 <h3 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h3><p>其认为同时修改共享资源的概率比较低，使用可以先修改共享资源，然后再验证时间内没有发生冲突，如果没有冲突操作完成，如果有冲突，则放弃本次操作</p>
@@ -437,6 +439,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/" rel="prev" title="线程、进程、并行、并发的概念">
+                线程、进程、并行、并发的概念 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -517,7 +523,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -588,7 +594,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E9%94%81"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">锁的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="nav-number">1.2.1.</span> <span class="nav-text">互斥锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">公平锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">非公平锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="nav-number">1.2.2.</span> <span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81"><span class="nav-number">1.2.3.</span> <span class="nav-text">读写锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-1"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">优点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">1.2.4.</span> <span class="nav-text">悲观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">1.2.5.</span> <span class="nav-text">乐观锁</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E9%94%81"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">锁的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="nav-number">1.2.1.</span> <span class="nav-text">互斥锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">公平锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">非公平锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="nav-number">1.2.2.</span> <span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81"><span class="nav-number">1.2.3.</span> <span class="nav-text">读写锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-1"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">优点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E9%94%81"><span class="nav-number">1.2.4.</span> <span class="nav-text">顺序锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">1.2.5.</span> <span class="nav-text">悲观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">1.2.6.</span> <span class="nav-text">乐观锁</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

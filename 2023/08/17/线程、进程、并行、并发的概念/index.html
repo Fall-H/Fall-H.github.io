@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="spring,ioc," />
+  <meta name="keywords" content="多线程," />
 
 
 
@@ -79,19 +79,20 @@
 
 
 
-<meta name="description" content="创建 bean 的过程调用 beanfactory 中的 getBean 中的方法得到类的实体 其中方法中可以使用 name requiredType args 得到特定的类型 有如下签名 12345Object getBean(String name) throws BeansException;&lt;T&gt; T getBean(String name, Class&lt;T&gt; re">
+<meta name="description" content="并发 和 并行概念 并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发  并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行   区别 并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行  并行是真正在同时进行的，即同一时间点上同时运行者多">
 <meta property="og:type" content="article">
-<meta property="og:title" content="GetBean 相关源码学习">
-<meta property="og:url" content="http://example.com/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="线程、进程、并行、并发的概念">
+<meta property="og:url" content="http://example.com/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/index.html">
 <meta property="og:site_name" content="秋语">
-<meta property="og:description" content="创建 bean 的过程调用 beanfactory 中的 getBean 中的方法得到类的实体 其中方法中可以使用 name requiredType args 得到特定的类型 有如下签名 12345Object getBean(String name) throws BeansException;&lt;T&gt; T getBean(String name, Class&lt;T&gt; re">
+<meta property="og:description" content="并发 和 并行概念 并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发  并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行   区别 并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行  并行是真正在同时进行的，即同一时间点上同时运行者多">
 <meta property="og:locale">
-<meta property="article:published_time" content="2022-07-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-07-13T16:00:00.000Z">
+<meta property="og:image" content="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg">
+<meta property="article:published_time" content="2023-08-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-08-16T16:00:00.000Z">
 <meta property="article:author" content="秋语">
-<meta property="article:tag" content="spring">
-<meta property="article:tag" content="ioc">
+<meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg">
 
 
 
@@ -121,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2022/07/11/bean 相关源码学习/"/>
+  <link rel="canonical" href="http://example.com/2023/08/17/线程、进程、并行、并发的概念/"/>
 
 
 
 
 
-  <title>GetBean 相关源码学习 | 秋语</title>
+  <title>线程、进程、并行、并发的概念 | 秋语</title>
   
 
 
@@ -249,12 +250,12 @@
   
   
 
-  <article class="post post-type-ioc" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-多线程" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/11/bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -271,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">GetBean 相关源码学习</h1>
+          <h1 class="post-title" itemprop="name headline">线程、进程、并行、并发的概念</h1>
         
 
         <div class="post-meta">
@@ -283,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-11T00:00:00+08:00">
-                2022-07-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-08-17T00:00:00+08:00">
+                2023-08-17
               </time>
             
 
@@ -299,8 +300,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2022-07-14T00:00:00+08:00">
-                2022-07-14
+              <time title="更新于" itemprop="dateModified" datetime="2023-08-17T00:00:00+08:00">
+                2023-08-17
               </time>
             
           </span>
@@ -318,19 +319,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index">
-                    <span itemprop="name">spring</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/ioc/" itemprop="url" rel="index">
-                    <span itemprop="name">ioc</span>
+                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
                   </a>
                 </span>
 
@@ -366,63 +356,40 @@
       
 
       
-        <h1 id="创建-bean-的过程"><a href="#创建-bean-的过程" class="headerlink" title="创建 bean 的过程"></a>创建 <code>bean</code> 的过程</h1><p>调用 <code>beanfactory</code> 中的 <code>getBean</code> 中的方法得到类的实体</p>
-<p>其中方法中可以使用 <code>name</code> <code>requiredType</code> <code>args</code> 得到特定的类型</p>
-<p>有如下签名</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(String name, Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br></pre></td></tr></table></figure>
-
-<p>进入 <code>getBean</code> 之后进入 <code>doGetBean</code> 方法统一处理所有的 <code>getBean</code> </p>
-<p>在先去单例缓存中尝试取出 <code>bean</code> 如果没有 <code>bean</code> 通过 <code>singleton</code> 和 <code>prototype</code> 判断是创建单例还是原型</p>
-<ol>
-<li>单例</li>
-</ol>
-<p><code>AbstractBeanFactory.java</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sharedInstance = getSingleton(beanName, () -&gt; &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> createBean(beanName, mbd, args);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">	    <span class="comment">// 从单例缓存中显式删除实例：它可能已经放在那里</span></span><br><span class="line">	    <span class="comment">// 急切地通过创建过程，以允许循环引用解析。</span></span><br><span class="line">	    <span class="comment">// 还要删除任何接收到对 bean 的临时引用的 bean。</span></span><br><span class="line">	    destroySingleton(beanName);</span><br><span class="line">	    <span class="keyword">throw</span> ex;</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
-
-<p>调用 <code>createBean</code> 方法 创建 <code>bean</code> 同时注册进单例缓存中</p>
-<p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-<ol start="2">
-<li>原型</li>
-</ol>
-<p><code>AbstractBeanFactory.java</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">prototypeInstance</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	beforePrototypeCreation(beanName);</span><br><span class="line">	prototypeInstance = createBean(beanName, mbd, args);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">	afterPrototypeCreation(beanName);</span><br><span class="line">&#125;</span><br><span class="line">beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);</span><br></pre></td></tr></table></figure>
-
-<p>调用 <code>beforePrototypeCreation</code></p>
-<p>调用 <code>createBean</code> 方法 创建 <code>bean</code></p>
-<p>调用 <code>afterPrototypeCreation</code></p>
-<p>调用 <code>getObjectForBeanInstance</code> 创建 <code>bean</code></p>
-<p><small> <code>getObjectForBeanInstance</code> 这个方法 主要是获取给定 bean 实例的对象，bean 实例本身或其创建的对象（如果是 FactoryBean） </small></p>
-<p>然后就是进入 <code>createBean</code> 方法之中执行 <code>doCreateBean</code> 方法加载创建类的细节</p>
-<h1 id="在-doCreateBean-方法中"><a href="#在-doCreateBean-方法中" class="headerlink" title="在 doCreateBean 方法中"></a>在 <code>doCreateBean</code> 方法中</h1><ol>
-<li><p>实例化 <code>bean</code> 调用 <code>createBeanInstance</code></p>
-<ol>
-<li>如果是通过 <code>@Bean</code> 加载 <code>bean</code> 的话，调用 <code>instantiateUsingFactoryMethod</code> 通过方法实例化</li>
-<li>匹配类的构造器，通过构造器将类实例化</li>
-</ol>
+        <h1 id="并发-和-并行"><a href="#并发-和-并行" class="headerlink" title="并发 和 并行"></a>并发 和 并行</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发</p>
 </li>
-<li><p>填充 <code>bean</code> 中的字段</p>
-<ol>
-<li>填充字段的方案是由 <code>RootBeanDefinition</code> 这个包装类中的 <code>PropertyValues</code> 字段</li>
-<li>主要是调用 <code>applyPropertyValues</code> 这个方法去填充字段 </li>
-<li>如果使用注解的方式加载 <code>bean</code> 的话还会加载 <code>AutowiredAnnotationProcessor</code> 这样一个类，在填充的会使用其实现的一个 <code>postProcessProperties</code> 方式读取带有 <code>@Autowired</code> 的代码进行代码字段的注入</li>
-</ol>
+<li><p>并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行</p>
 </li>
-<li><p>初始化 <code>bean</code> </p>
-<ol>
-<li>调用 <code>Aware</code> 容器感知功能其执行的顺序是 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BeanNameAware</span><br><span class="line">BeanClassLoaderAware</span><br><span class="line">BeanFactoryAware</span><br></pre></td></tr></table></figure>
- 通过这些方法可以在当前 <code>bean</code> 中后的例如: <code>bean name</code> <code>class loader</code> <code>bean factory</code> 等一些基础信息</li>
-<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessBeforeInitialization</code></li>
-<li>调用用户自定义的 <code>init method</code></li>
-<li>调用 <code>BeanPostProcessor</code> 中的 <code>postProcessAfterInitialization</code></li>
-</ol>
+</ul>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ul>
+<li><p>并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行</p>
 </li>
-<li><p>通过 <code>earlySingletonExposure</code> 解决依赖循环的问题</p>
+<li><p>并行是真正在同时进行的，即同一时间点上同时运行者多个进程</p>
 </li>
-<li><p>将该 <code>bean</code> 注册进 <code>disposable</code> 列表中</p>
+</ul>
+<h1 id="进程-和-线程"><a href="#进程-和-线程" class="headerlink" title="进程 和 线程"></a>进程 和 线程</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>进程：在计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配的基本单位，在早期面向进程设计的计算机结果中，进程是程序的基本执行实体，在当代面向线程设计的计算机结果中，进程是线程的容器</p>
 </li>
-</ol>
-<p>返回类型</p>
-<p>得到 <code>bean</code> 的整体流程结束</p>
+<li><p>线程：操作系统能够运算调度的最小单位。它被包含在进程中，是进程中的实际运作单位。一条线程指的是进程中一个单一顺序的控制流，一个进程中可以并发多个线程，每个线程并行执行不同任务。线程是独立调度和分派的基本单位。</p>
+</li>
+</ul>
+<p><code>线程状态流转图</code></p>
+<p><img src="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg"></p>
+<h2 id="区别-1"><a href="#区别-1" class="headerlink" title="区别"></a>区别</h2><p>进程和线程的主要区别在于他们是不同的操作系统资源管理方式。进程具有独立的地址空间，一个进程崩溃后，在保护模式下不会对其他进程产生影响，而线程只是一个进程中不同执行路径。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉等于整个进程死掉，所以多进程程序比多线程程序更加健壮，但在进程切换时，消耗资源较大，效率低。</p>
+<p>对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>一个程序至少有一个进程，一个进程至少有一个线程</li>
+<li>线程的划分尺度小于进程，使得线程的并发性高</li>
+<li>进程在执行过程中拥有独立的内存单元，而线程共享内存，这极大的提高了程序的运行效率</li>
+<li>每个独立的进程有个程序运行的入口、顺序执行序列和程序的出口。但是线程不能独立执行，必须依存于进程中</li>
+<li>多线程的意义在于一个进程中，有多个执行部分可以同时执行。但操作系统并没有将多个线程看做多个独立的应用，来实现进程的调度和管理以及资源分配</li>
+</ul>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Sunny_Ran/article/details/80247898">https://blog.csdn.net/Sunny_Ran/article/details/80247898</a></li>
+<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503">https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503</a></li>
+<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B/103101?fromModule=lemma-qiyi_sense-lemma">https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B/103101?fromModule=lemma-qiyi_sense-lemma</a></li>
+</ul>
 
       
     </div>
@@ -440,9 +407,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/spring/" rel="tag"># spring</a>
-          
-            <a href="/tags/ioc/" rel="tag"># ioc</a>
+            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
           
         </div>
       
@@ -455,15 +420,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2023/08/08/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%94%81/" rel="next" title="多线程锁">
+                <i class="fa fa-chevron-left"></i> 多线程锁
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2022/07/14/%E8%AF%BB%E5%8F%96%20bean%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="prev" title="读取 bean 相关源码学习">
-                读取 bean 相关源码学习 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -615,7 +580,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-bean-%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">创建 bean 的过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8-doCreateBean-%E6%96%B9%E6%B3%95%E4%B8%AD"><span class="nav-number">2.</span> <span class="nav-text">在 doCreateBean 方法中</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91-%E5%92%8C-%E5%B9%B6%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">并发 和 并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">1.2.</span> <span class="nav-text">区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B-%E5%92%8C-%E7%BA%BF%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">进程 和 线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB-1"><span class="nav-number">2.2.</span> <span class="nav-text">区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.2.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">引用</span></a></li></ol></div>
             
 
           </div>
