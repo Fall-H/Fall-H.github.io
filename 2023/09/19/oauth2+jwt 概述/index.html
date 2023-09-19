@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="多线程," />
+  <meta name="keywords" content="oauth2,jwt," />
 
 
 
@@ -79,20 +79,19 @@
 
 
 
-<meta name="description" content="并发 和 并行概念 并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发  并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行   区别 并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行  并行是真正在同时进行的，即同一时间点上同时运行者多">
+<meta name="description" content="Session、Token、JWT、OAuth2 的区别首先我对于几个概念进行阐述和区分 从分类上来说  Session： 是一种认证机制 Token、JWT： 是认证授权机制 OAuth2： 是授权框架  从应用场景上来说  Session： 自己的简单网站 Token： 分布式、跨系统、单点登录、允许第三方调用 api 接口 JWT： 场景可以同 Token 一致，但是获取验证 Token 的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="线程、进程、并行、并发的概念">
-<meta property="og:url" content="http://example.com/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/index.html">
+<meta property="og:title" content="oauth2+jwt 概述">
+<meta property="og:url" content="http://example.com/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/index.html">
 <meta property="og:site_name" content="秋语">
-<meta property="og:description" content="并发 和 并行概念 并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发  并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行   区别 并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行  并行是真正在同时进行的，即同一时间点上同时运行者多">
+<meta property="og:description" content="Session、Token、JWT、OAuth2 的区别首先我对于几个概念进行阐述和区分 从分类上来说  Session： 是一种认证机制 Token、JWT： 是认证授权机制 OAuth2： 是授权框架  从应用场景上来说  Session： 自己的简单网站 Token： 分布式、跨系统、单点登录、允许第三方调用 api 接口 JWT： 场景可以同 Token 一致，但是获取验证 Token 的">
 <meta property="og:locale">
-<meta property="og:image" content="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg">
-<meta property="article:published_time" content="2023-08-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-08-16T16:00:00.000Z">
+<meta property="article:published_time" content="2023-09-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-18T16:00:00.000Z">
 <meta property="article:author" content="秋语">
-<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="oauth2">
+<meta property="article:tag" content="jwt">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg">
 
 
 
@@ -122,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2023/08/17/线程、进程、并行、并发的概念/"/>
+  <link rel="canonical" href="http://example.com/2023/09/19/oauth2+jwt 概述/"/>
 
 
 
 
 
-  <title>线程、进程、并行、并发的概念 | 秋语</title>
+  <title>oauth2+jwt 概述 | 秋语</title>
   
 
 
@@ -250,12 +249,12 @@
   
   
 
-  <article class="post post-type-多线程" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-secure" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -272,7 +271,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">线程、进程、并行、并发的概念</h1>
+          <h1 class="post-title" itemprop="name headline">oauth2+jwt 概述</h1>
         
 
         <div class="post-meta">
@@ -284,8 +283,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-08-17T00:00:00+08:00">
-                2023-08-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-09-19T00:00:00+08:00">
+                2023-09-19
               </time>
             
 
@@ -300,8 +299,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2023-08-17T00:00:00+08:00">
-                2023-08-17
+              <time title="更新于" itemprop="dateModified" datetime="2023-09-19T00:00:00+08:00">
+                2023-09-19
               </time>
             
           </span>
@@ -319,8 +318,19 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">多线程</span>
+                  <a href="/categories/oauth2/" itemprop="url" rel="index">
+                    <span itemprop="name">oauth2</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/oauth2/jwt/" itemprop="url" rel="index">
+                    <span itemprop="name">jwt</span>
                   </a>
                 </span>
 
@@ -356,39 +366,59 @@
       
 
       
-        <h1 id="并发-和-并行"><a href="#并发-和-并行" class="headerlink" title="并发 和 并行"></a>并发 和 并行</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
-<li><p>并发：在单核 CPU 中，系统调度在某一时刻只能让一个进程运行，虽然这种调度机制有多种形式，只要通过不断切换需要运行的进程让其运行的方式叫并发</p>
-</li>
-<li><p>并行：在多核 CPU 中，可以让两个以上的进程同时运行在不同的物理核心上，这种运行方式就是并行</p>
-</li>
+        <h1 id="Session、Token、JWT、OAuth2-的区别"><a href="#Session、Token、JWT、OAuth2-的区别" class="headerlink" title="Session、Token、JWT、OAuth2 的区别"></a>Session、Token、JWT、OAuth2 的区别</h1><p>首先我对于几个概念进行阐述和区分</p>
+<p>从分类上来说</p>
+<ul>
+<li>Session： 是一种认证机制</li>
+<li>Token、JWT： 是认证授权机制</li>
+<li>OAuth2： 是授权框架</li>
 </ul>
-<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ul>
-<li><p>并发在微观上不是同时执行的，只是把时间分成若干段，使多个进程快速交替的执行</p>
-</li>
-<li><p>并行是真正在同时进行的，即同一时间点上同时运行者多个进程</p>
-</li>
+<p>从应用场景上来说</p>
+<ul>
+<li>Session： 自己的简单网站</li>
+<li>Token： 分布式、跨系统、单点登录、允许第三方调用 api 接口</li>
+<li>JWT： 场景可以同 Token 一致，但是获取验证 Token 的实现逻辑不一样</li>
+<li>OAuth2： 授权第三方应用、多平台单点登录</li>
 </ul>
-<h1 id="进程-和-线程"><a href="#进程-和-线程" class="headerlink" title="进程 和 线程"></a>进程 和 线程</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><ul>
-<li><p>进程：在计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配的基本单位，在早期面向进程设计的计算机结果中，进程是程序的基本执行实体，在当代面向线程设计的计算机结果中，进程是线程的容器</p>
-</li>
-<li><p>线程：操作系统能够运算调度的最小单位。它被包含在进程中，是进程中的实际运作单位。一条线程指的是进程中一个单一顺序的控制流，一个进程中可以并发多个线程，每个线程并行执行不同任务。线程是独立调度和分派的基本单位。</p>
-</li>
+<p>从具体实现来说</p>
+<ul>
+<li>Session： 基于 cookie 和 sessionId</li>
+<li>Token：uid（用户唯一身份标识） + timestamp（当前时间戳）</li>
+<li>JWT：header（头部） + payload（负载） + sign（签名）</li>
+<li>OAuth2：基于授权码 code、client_id、client_secret</li>
 </ul>
-<p><code>线程状态流转图</code></p>
-<p><img src="https://cdn.staticaly.com/gh/Fall-H/image_host@master/Fall20230817.jpg"></p>
-<h2 id="区别-1"><a href="#区别-1" class="headerlink" title="区别"></a>区别</h2><p>进程和线程的主要区别在于他们是不同的操作系统资源管理方式。进程具有独立的地址空间，一个进程崩溃后，在保护模式下不会对其他进程产生影响，而线程只是一个进程中不同执行路径。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉等于整个进程死掉，所以多进程程序比多线程程序更加健壮，但在进程切换时，消耗资源较大，效率低。</p>
-<p>对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
-<li>一个程序至少有一个进程，一个进程至少有一个线程</li>
-<li>线程的划分尺度小于进程，使得线程的并发性高</li>
-<li>进程在执行过程中拥有独立的内存单元，而线程共享内存，这极大的提高了程序的运行效率</li>
-<li>每个独立的进程有个程序运行的入口、顺序执行序列和程序的出口。但是线程不能独立执行，必须依存于进程中</li>
-<li>多线程的意义在于一个进程中，有多个执行部分可以同时执行。但操作系统并没有将多个线程看做多个独立的应用，来实现进程的调度和管理以及资源分配</li>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><h2 id="什么是-JWT"><a href="#什么是-JWT" class="headerlink" title="什么是 JWT"></a>什么是 JWT</h2><ul>
+<li>JSON Web Token （简称 JWT）是目前最流行的跨域认证解决方案</li>
+<li>JWT 是为了在网络应用环境间传递声明而执行的一种基于 JSON 的开放标准（RFC 7519）。JWT 的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源</li>
+<li>可以使用 HMAC 算法或者是 RSA 的公&#x2F;私秘钥对 JWT 进行签名。因为数字签名的存在，这些传递的信息是可信的</li>
 </ul>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Sunny_Ran/article/details/80247898">https://blog.csdn.net/Sunny_Ran/article/details/80247898</a></li>
-<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503">https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503</a></li>
-<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B/103101?fromModule=lemma-qiyi_sense-lemma">https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B/103101?fromModule=lemma-qiyi_sense-lemma</a></li>
+<h2 id="WT-（Web-Token）"><a href="#WT-（Web-Token）" class="headerlink" title="WT （Web Token）"></a>WT （Web Token）</h2><p>WT包含三个部分：Header头部，Payload负载和Signature签名，三个部分之间用 “.” 做分割</p>
+<ol>
+<li><p>Header：在其中通常包含了两个部分：type：代表 token 的类型，alg：使用的 Hash 算法，例如 HMAC SHA256 或 RSA<br> 如：{“alg”: “HS256”, “type”: “JWT”}</p>
+</li>
+<li><p>Payload token：它包含一些声明 Claim 声明分三类：</p>
+</li>
+</ol>
+<ul>
+<li>Reserved Claims：这是一套预定义的声明这不是必须的，这是一套易于使用、操作性强的声明，如：iss(issuer)、exp(expiration time)、sub(subject)、aud(audience)等</li>
+<li>Plubic Claims</li>
+<li>Private Claims：交换信息的双方自定义的声明，经过 Base64Url 编码后形成第二部分，如：{“sub”: “1234567890”, “name”: “Fall”, “admin”, “true”}</li>
+</ul>
+<ol start="3">
+<li>signature：使用 header 中指定的算法将编码后的 header、编码后的 payload、一个 secret 进行加密。如：HMACSH256(base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret) 这个 signature 字段被用来确认 JWT 信息的发送者是谁，并保证信息没有被修改</li>
+</ol>
+<h2 id="JWT-认证流程"><a href="#JWT-认证流程" class="headerlink" title="JWT 认证流程"></a>JWT 认证流程</h2><ul>
+<li>用户输入用户名&#x2F;密码登录，服务端认证成功后，会返回给客户端一个 JWT </li>
+<li>客户端将 token 保存到本地</li>
+<li>当用户希望访问一个受保护的路由或者资源的时候，需要请求头的 Authorization 字段中使用 Bearer 模式添加 JWT，如 Authorization: Bearer + token</li>
+</ul>
+<h1 id="OAuth"><a href="#OAuth" class="headerlink" title="OAuth"></a>OAuth</h1><p>在 OAuth 中 O 是 Open 的简称，表示开放的意思。Auth 表示 “授权” 的意思，所以它的意思是 “开发授权” 的意思，其是一个关于授权（authorization）的开放网络标准，总的来说其是一种授权协议</p>
+<p>其允许用户授权第三方应用访问他在存储在另外服务商里的各种信息数据，而这种授权不需要提供用户名和密码提供给第三方应用，这种授权协议，就是保证第三方应用只有在获得授权之后，才能进一步访问授权者的数据</p>
+<h2 id="OAuth2-授权模式"><a href="#OAuth2-授权模式" class="headerlink" title="OAuth2 授权模式"></a>OAuth2 授权模式</h2><ul>
+<li>授权码模式</li>
+<li>简化模式</li>
+<li>密码模式</li>
+<li>客户端模式</li>
 </ul>
 
       
@@ -407,7 +437,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+            <a href="/tags/oauth2/" rel="tag"># oauth2</a>
+          
+            <a href="/tags/jwt/" rel="tag"># jwt</a>
           
         </div>
       
@@ -420,8 +452,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2023/08/08/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%94%81/" rel="next" title="多线程锁">
-                <i class="fa fa-chevron-left"></i> 多线程锁
+              <a href="/2023/08/17/%E7%BA%BF%E7%A8%8B%E3%80%81%E8%BF%9B%E7%A8%8B%E3%80%81%E5%B9%B6%E8%A1%8C%E3%80%81%E5%B9%B6%E5%8F%91%E7%9A%84%E6%A6%82%E5%BF%B5/" rel="next" title="线程、进程、并行、并发的概念">
+                <i class="fa fa-chevron-left"></i> 线程、进程、并行、并发的概念
               </a>
             
           </div>
@@ -429,10 +461,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/" rel="prev" title="oauth2+jwt 概述">
-                oauth2+jwt 概述 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -584,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91-%E5%92%8C-%E5%B9%B6%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">并发 和 并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">1.2.</span> <span class="nav-text">区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B-%E5%92%8C-%E7%BA%BF%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">进程 和 线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB-1"><span class="nav-number">2.2.</span> <span class="nav-text">区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.2.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">引用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Session%E3%80%81Token%E3%80%81JWT%E3%80%81OAuth2-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">Session、Token、JWT、OAuth2 的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JWT"><span class="nav-number">2.</span> <span class="nav-text">JWT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JWT"><span class="nav-number">2.1.</span> <span class="nav-text">什么是 JWT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WT-%EF%BC%88Web-Token%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">WT （Web Token）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JWT-%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">JWT 认证流程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OAuth"><span class="nav-number">3.</span> <span class="nav-text">OAuth</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OAuth2-%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">OAuth2 授权模式</span></a></li></ol></li></ol></div>
             
 
           </div>

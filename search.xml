@@ -632,4 +632,71 @@
         <tag>多线程</tag>
       </tags>
   </entry>
+  <entry>
+    <title>oauth2+jwt 概述</title>
+    <url>/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="Session、Token、JWT、OAuth2-的区别"><a href="#Session、Token、JWT、OAuth2-的区别" class="headerlink" title="Session、Token、JWT、OAuth2 的区别"></a>Session、Token、JWT、OAuth2 的区别</h1><p>首先我对于几个概念进行阐述和区分</p>
+<p>从分类上来说</p>
+<ul>
+<li>Session： 是一种认证机制</li>
+<li>Token、JWT： 是认证授权机制</li>
+<li>OAuth2： 是授权框架</li>
+</ul>
+<p>从应用场景上来说</p>
+<ul>
+<li>Session： 自己的简单网站</li>
+<li>Token： 分布式、跨系统、单点登录、允许第三方调用 api 接口</li>
+<li>JWT： 场景可以同 Token 一致，但是获取验证 Token 的实现逻辑不一样</li>
+<li>OAuth2： 授权第三方应用、多平台单点登录</li>
+</ul>
+<p>从具体实现来说</p>
+<ul>
+<li>Session： 基于 cookie 和 sessionId</li>
+<li>Token：uid（用户唯一身份标识） + timestamp（当前时间戳）</li>
+<li>JWT：header（头部） + payload（负载） + sign（签名）</li>
+<li>OAuth2：基于授权码 code、client_id、client_secret</li>
+</ul>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><h2 id="什么是-JWT"><a href="#什么是-JWT" class="headerlink" title="什么是 JWT"></a>什么是 JWT</h2><ul>
+<li>JSON Web Token （简称 JWT）是目前最流行的跨域认证解决方案</li>
+<li>JWT 是为了在网络应用环境间传递声明而执行的一种基于 JSON 的开放标准（RFC 7519）。JWT 的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源</li>
+<li>可以使用 HMAC 算法或者是 RSA 的公&#x2F;私秘钥对 JWT 进行签名。因为数字签名的存在，这些传递的信息是可信的</li>
+</ul>
+<h2 id="WT-（Web-Token）"><a href="#WT-（Web-Token）" class="headerlink" title="WT （Web Token）"></a>WT （Web Token）</h2><p>WT包含三个部分：Header头部，Payload负载和Signature签名，三个部分之间用 “.” 做分割</p>
+<ol>
+<li><p>Header：在其中通常包含了两个部分：type：代表 token 的类型，alg：使用的 Hash 算法，例如 HMAC SHA256 或 RSA<br> 如：{“alg”: “HS256”, “type”: “JWT”}</p>
+</li>
+<li><p>Payload token：它包含一些声明 Claim 声明分三类：</p>
+</li>
+</ol>
+<ul>
+<li>Reserved Claims：这是一套预定义的声明这不是必须的，这是一套易于使用、操作性强的声明，如：iss(issuer)、exp(expiration time)、sub(subject)、aud(audience)等</li>
+<li>Plubic Claims</li>
+<li>Private Claims：交换信息的双方自定义的声明，经过 Base64Url 编码后形成第二部分，如：{“sub”: “1234567890”, “name”: “Fall”, “admin”, “true”}</li>
+</ul>
+<ol start="3">
+<li>signature：使用 header 中指定的算法将编码后的 header、编码后的 payload、一个 secret 进行加密。如：HMACSH256(base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret) 这个 signature 字段被用来确认 JWT 信息的发送者是谁，并保证信息没有被修改</li>
+</ol>
+<h2 id="JWT-认证流程"><a href="#JWT-认证流程" class="headerlink" title="JWT 认证流程"></a>JWT 认证流程</h2><ul>
+<li>用户输入用户名&#x2F;密码登录，服务端认证成功后，会返回给客户端一个 JWT </li>
+<li>客户端将 token 保存到本地</li>
+<li>当用户希望访问一个受保护的路由或者资源的时候，需要请求头的 Authorization 字段中使用 Bearer 模式添加 JWT，如 Authorization: Bearer + token</li>
+</ul>
+<h1 id="OAuth"><a href="#OAuth" class="headerlink" title="OAuth"></a>OAuth</h1><p>在 OAuth 中 O 是 Open 的简称，表示开放的意思。Auth 表示 “授权” 的意思，所以它的意思是 “开发授权” 的意思，其是一个关于授权（authorization）的开放网络标准，总的来说其是一种授权协议</p>
+<p>其允许用户授权第三方应用访问他在存储在另外服务商里的各种信息数据，而这种授权不需要提供用户名和密码提供给第三方应用，这种授权协议，就是保证第三方应用只有在获得授权之后，才能进一步访问授权者的数据</p>
+<h2 id="OAuth2-授权模式"><a href="#OAuth2-授权模式" class="headerlink" title="OAuth2 授权模式"></a>OAuth2 授权模式</h2><ul>
+<li>授权码模式</li>
+<li>简化模式</li>
+<li>密码模式</li>
+<li>客户端模式</li>
+</ul>
+]]></content>
+      <categories>
+        <category>oauth2</category>
+        <category>jwt</category>
+      </categories>
+      <tags>
+        <tag>oauth2</tag>
+        <tag>jwt</tag>
+      </tags>
+  </entry>
 </search>

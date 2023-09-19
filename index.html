@@ -244,6 +244,224 @@
   
   
 
+  <article class="post post-type-secure" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋语">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/09/19/oauth2+jwt%20%E6%A6%82%E8%BF%B0/" itemprop="url">oauth2+jwt 概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-09-19T00:00:00+08:00">
+                2023-09-19
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2023-09-19T00:00:00+08:00">
+                2023-09-19
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/oauth2/" itemprop="url" rel="index">
+                    <span itemprop="name">oauth2</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/oauth2/jwt/" itemprop="url" rel="index">
+                    <span itemprop="name">jwt</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Session、Token、JWT、OAuth2-的区别"><a href="#Session、Token、JWT、OAuth2-的区别" class="headerlink" title="Session、Token、JWT、OAuth2 的区别"></a>Session、Token、JWT、OAuth2 的区别</h1><p>首先我对于几个概念进行阐述和区分</p>
+<p>从分类上来说</p>
+<ul>
+<li>Session： 是一种认证机制</li>
+<li>Token、JWT： 是认证授权机制</li>
+<li>OAuth2： 是授权框架</li>
+</ul>
+<p>从应用场景上来说</p>
+<ul>
+<li>Session： 自己的简单网站</li>
+<li>Token： 分布式、跨系统、单点登录、允许第三方调用 api 接口</li>
+<li>JWT： 场景可以同 Token 一致，但是获取验证 Token 的实现逻辑不一样</li>
+<li>OAuth2： 授权第三方应用、多平台单点登录</li>
+</ul>
+<p>从具体实现来说</p>
+<ul>
+<li>Session： 基于 cookie 和 sessionId</li>
+<li>Token：uid（用户唯一身份标识） + timestamp（当前时间戳）</li>
+<li>JWT：header（头部） + payload（负载） + sign（签名）</li>
+<li>OAuth2：基于授权码 code、client_id、client_secret</li>
+</ul>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><h2 id="什么是-JWT"><a href="#什么是-JWT" class="headerlink" title="什么是 JWT"></a>什么是 JWT</h2><ul>
+<li>JSON Web Token （简称 JWT）是目前最流行的跨域认证解决方案</li>
+<li>JWT 是为了在网络应用环境间传递声明而执行的一种基于 JSON 的开放标准（RFC 7519）。JWT 的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源</li>
+<li>可以使用 HMAC 算法或者是 RSA 的公&#x2F;私秘钥对 JWT 进行签名。因为数字签名的存在，这些传递的信息是可信的</li>
+</ul>
+<h2 id="WT-（Web-Token）"><a href="#WT-（Web-Token）" class="headerlink" title="WT （Web Token）"></a>WT （Web Token）</h2><p>WT包含三个部分：Header头部，Payload负载和Signature签名，三个部分之间用 “.” 做分割</p>
+<ol>
+<li><p>Header：在其中通常包含了两个部分：type：代表 token 的类型，alg：使用的 Hash 算法，例如 HMAC SHA256 或 RSA<br> 如：{“alg”: “HS256”, “type”: “JWT”}</p>
+</li>
+<li><p>Payload token：它包含一些声明 Claim 声明分三类：</p>
+</li>
+</ol>
+<ul>
+<li>Reserved Claims：这是一套预定义的声明这不是必须的，这是一套易于使用、操作性强的声明，如：iss(issuer)、exp(expiration time)、sub(subject)、aud(audience)等</li>
+<li>Plubic Claims</li>
+<li>Private Claims：交换信息的双方自定义的声明，经过 Base64Url 编码后形成第二部分，如：{“sub”: “1234567890”, “name”: “Fall”, “admin”, “true”}</li>
+</ul>
+<ol start="3">
+<li>signature：使用 header 中指定的算法将编码后的 header、编码后的 payload、一个 secret 进行加密。如：HMACSH256(base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret) 这个 signature 字段被用来确认 JWT 信息的发送者是谁，并保证信息没有被修改</li>
+</ol>
+<h2 id="JWT-认证流程"><a href="#JWT-认证流程" class="headerlink" title="JWT 认证流程"></a>JWT 认证流程</h2><ul>
+<li>用户输入用户名&#x2F;密码登录，服务端认证成功后，会返回给客户端一个 JWT </li>
+<li>客户端将 token 保存到本地</li>
+<li>当用户希望访问一个受保护的路由或者资源的时候，需要请求头的 Authorization 字段中使用 Bearer 模式添加 JWT，如 Authorization: Bearer + token</li>
+</ul>
+<h1 id="OAuth"><a href="#OAuth" class="headerlink" title="OAuth"></a>OAuth</h1><p>在 OAuth 中 O 是 Open 的简称，表示开放的意思。Auth 表示 “授权” 的意思，所以它的意思是 “开发授权” 的意思，其是一个关于授权（authorization）的开放网络标准，总的来说其是一种授权协议</p>
+<p>其允许用户授权第三方应用访问他在存储在另外服务商里的各种信息数据，而这种授权不需要提供用户名和密码提供给第三方应用，这种授权协议，就是保证第三方应用只有在获得授权之后，才能进一步访问授权者的数据</p>
+<h2 id="OAuth2-授权模式"><a href="#OAuth2-授权模式" class="headerlink" title="OAuth2 授权模式"></a>OAuth2 授权模式</h2><ul>
+<li>授权码模式</li>
+<li>简化模式</li>
+<li>密码模式</li>
+<li>客户端模式</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
   <article class="post post-type-多线程" itemscope itemtype="http://schema.org/Article">
   
   
@@ -1957,198 +2175,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-webmvc" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/20/spring%20webmvc%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="秋语">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/07/20/spring%20webmvc%20%E7%9B%B8%E5%85%B3%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">spring webmvc 相关源码学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-20T00:00:00+08:00">
-                2022-07-20
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2022-07-20T00:00:00+08:00">
-                2022-07-20
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index">
-                    <span itemprop="name">spring</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/webmvc/" itemprop="url" rel="index">
-                    <span itemprop="name">webmvc</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="spring-webmvc-初始化过程"><a href="#spring-webmvc-初始化过程" class="headerlink" title="spring webmvc 初始化过程"></a><code>spring webmvc</code> 初始化过程</h1><h2 id="spring-webmvc-如何使用"><a href="#spring-webmvc-如何使用" class="headerlink" title="spring webmvc 如何使用"></a><code>spring webmvc</code> 如何使用</h2><p>首先，要导入</p>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework:spring-context:5.3.21&#x27;</span></span><br><span class="line">implementation <span class="string">&#x27;org.springframework:spring-webmvc:5.3.21&#x27;</span></span><br><span class="line">implementation <span class="string">&#x27;org.springframework:spring-web:5.3.21&#x27;</span></span><br><span class="line">compileOnly <span class="string">&#x27;javax.servlet:javax.servlet-api:4.0.0&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>这样四个包</p>
-<p>在<code>web.xml</code>中设置</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">version</span>=<span class="string">&quot;4.0&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>dispatcher<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextClass<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>org.springframework.web.context.support.AnnotationConfigWebApplicationContext<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>org.tolerate.mvc.AppConfig<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>0<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>dispatcher<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>同时新建类 <code>AppConfig</code> </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.ComponentScan;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.config.annotation.EnableWebMvc;</span><br><span class="line"></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppConfig</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用 <code>spring</code> 的自动装配方案，并且开启 <code>WebMvc</code></p>
-<p>同时新建类 <code>UserController</code> 打上 <code>RestController</code> 注解</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">func</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;你好&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后对 <code>tomcat</code> 经行启动配置 <code>spring webmvc</code> 就是启动了</p>
-<h2 id="DispatcherServlet-源码学习"><a href="#DispatcherServlet-源码学习" class="headerlink" title="DispatcherServlet 源码学习"></a><code>DispatcherServlet</code> 源码学习</h2><p>首先第一点在 <code>tomcat</code> 的 <code>web.xml</code> 中如果我们给 <code>servlet</code> 设置</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>0<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>则会在 <code>tomcat</code> 初始化时使用该 <code>servlet</code></p>
-<p><code>DispatcherServlet</code> 其是 <code>HttpServletBean</code> 的子类而是 <code>HttpServlet</code> 的子类</p>
-<p>在 <code>HttpServletBean</code> 实现了 <code>init</code> 方法</p>
-<p>其方法链是 <code>init</code> -&gt; <code>initServletBean</code> -&gt; <code>initWebApplicationContext</code> -&gt; <code>configureAndRefreshWebApplicationContext</code> -&gt; <code>refresh</code> 直到 <code>refresh</code> 方法中去加载所有的 <code>bean</code> 这个在之前也是讲过的</p>
-<p>但是其中有一个方法是当时没有注意到的 <code>finishBeanFactoryInitialization</code> 它会实例化剩余的所有的 <code>bean</code> 其中有一个类的初始化方法是加载映射 <code>mapping</code> 的</p>
-<p>其类是 <code>RequestMappingHandlerMapping</code> 从 <code>afterPropertiesSet</code> -&gt; <code>initHandlerMethods</code> -&gt; <code>processCandidateBean</code> 到这个方法中去查看该类上是否有 <code>RestController</code> 注解如果有该注解</p>
-<p>则会执行 <code>detectHandlerMethods</code> 方法在 <code>getMappingForMethod</code> 方法中选择出该类中所有的方法其拥有 <code>RequestMapping</code> 注解的方法并将其注册</p>
-<p>至此 <code>spring webmvc</code> 初始化完成</p>
-<h1 id="接口的请求"><a href="#接口的请求" class="headerlink" title="接口的请求"></a>接口的请求</h1><p>在 <code>FrameworkServlet</code> 中实现了所有的 <code>Servlet</code> 请求方案，同时这些请求方案都是在执行一个方法叫做 <code>processRequest</code> 来完成方法请求和映射在进行初始化之后则调用 <code>doService</code> 方法在去执行 <code>doDispatch</code></p>
-<p>在 <code>doDispatch</code> 中会去 <code>handlerMappings</code> 中进行映射选择出合适的方式经行调用然后调用 <code>handle</code> 进行方法的调用同时将方法的结果放在方法 <code>processDispatchResult</code> 中处理查看放回的东西可以是 <code>ModelAndView</code>，也可以是要解析为 <code>ModelAndView</code> 的 <code>Exception</code></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2203,7 +2229,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2214,7 +2240,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2225,7 +2251,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
